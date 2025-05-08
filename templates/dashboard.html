@@ -14,61 +14,51 @@
     #datetime {
       position: absolute;
       top: 10px; right: 20px;
-      font-size: 0.9em;
-      color: #ccc;
+      font-size: 0.9em; color: #ccc;
     }
     h1 {
-      text-align: left;
-      color: #FF6A13;
+      text-align: left; color: #FF6A13;
       margin: 0 0 10px;
     }
     #controlBar {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-bottom: 10px;
+      display: flex; justify-content:flex-end;
+      gap:8px; margin-bottom:10px;
     }
     button {
-      padding: 6px 10px;
-      border: none; border-radius: 4px;
-      cursor: pointer; font-size: 0.9em;
+      padding:6px 10px; border:none;
+      border-radius:4px; cursor:pointer;
+      font-size:0.9em;
     }
-    .orange { background: #FF6A13; color: white; }
-    .blue   { background: #007bff; color: white; }
-    .grey   { background: #6c757d; color: white; }
-    .red    { background: #dc3545; color: white; }
+    .orange { background:#FF6A13; color:white; }
+    .blue   { background:#007bff; color:white; }
+    .grey   { background:#6c757d; color:white; }
+    .red    { background:#dc3545; color:white; }
 
     table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #333;
-      table-layout: fixed;
+      width:100%; border-collapse:collapse;
+      background:#333; table-layout:fixed;
     }
-    colgroup     { display: table-column-group; }
-    col:first-child  { width: 80px; }   /* Target */
-    col:nth-child(2) { width:100px; }   /* Timer */
-    col:nth-child(3) { width:160px; }   /* Table/Order */
-    col:nth-child(4) { width:auto; }    /* Items */
-    col:nth-child(5) { width:150px; }   /* Comments */
-    col:nth-child(6) { width:140px; }   /* Action now 140px */
+    colgroup { display:table-column-group; }
+    col:first-child  { width:80px; }   /* Target */
+    col:nth-child(2) { width:100px; }  /* Timer */
+    col:nth-child(3) { width:160px; }  /* Table/Order */
+    col:nth-child(4) { width:auto; }   /* Items fill remaining */
+    col:nth-child(5) { width:180px; }  /* Comments now 180px */
+    col:nth-child(6) { width:180px; }  /* Action now 180px */
 
     th, td {
-      border:1px solid #555;
-      padding:6px;
-      vertical-align: top;
+      border:1px solid #555; padding:6px;
+      vertical-align:top;
     }
     th {
-      background: #FF6A13;
-      color: black;
-      text-align: center;
+      background:#FF6A13; color:black;
+      text-align:center;
     }
 
-    /* center the traffic-light cell */
-    td:first-child { text-align: center; }
+    td:first-child { text-align:center; }  /* center traffic-light */
 
     .light-box {
-      width:48px; height:48px;
-      border-radius:4px;
+      width:48px; height:48px; border-radius:4px;
       margin:auto;
     }
     .green { background:#28a745; }
@@ -76,100 +66,65 @@
     .red   { background:#dc3545; }
 
     .timer {
-      font-weight: bold;
-      font-size: 1.3em;    /* larger */
-      text-align: center;  /* center timers */
+      font-weight:bold; font-size:1.3em;
+      text-align:center;
     }
     .timer small {
-      display: block;
-      margin-top: 4px;
-      font-size: 0.8em;
-      color: #ccc;
+      display:block; margin-top:4px;
+      font-size:0.8em; color:#ccc;
     }
 
-    .order-col {
-      text-align: center;  /* center table/order */
-    }
-    .order-col .table-num {
-      font-size: 1.3em;
-      margin-bottom: 4px;
-    }
-    .order-col .order-num {
-      font-size: 1.6em;
-      font-weight: bold;
-    }
+    .order-col { text-align:center; }
+    .order-col .table-num { font-size:1.3em; margin-bottom:4px; }
+    .order-col .order-num { font-size:1.6em; font-weight:bold; }
 
-    .items-col {
-      text-align: left;
-    }
+    .items-col { text-align:left; }
     .items-col h4 {
-      margin:4px 0 2px;
-      font-size:1em;
+      margin:4px 0 2px; font-size:1em;
       text-decoration:underline;
     }
     .items-col ul {
-      margin:4px 0 8px 16px;
-      padding:0;
-      list-style-type:disc;
+      margin:2px 0 8px 16px;
+      padding:0; list-style-type:disc;
     }
 
-    .comments-col {
-      text-align: center;
-    }
+    .comments-col { text-align:center; }
 
     .controls {
-      position: relative;
-      height: 100%;
-      padding-top: 4px;
+      position:relative; height:100%; padding-top:4px;
     }
-    .controls button {
-      float: left;
-    }
+    .controls button { float:left; }
     .controls span {
-      position: absolute;
-      top: 8px; left: 68px;
-      color: gold;
-      font-weight: bold;
+      position:absolute; top:8px; left:68px;
+      color:gold; font-weight:bold;
     }
 
     .modal {
-      display: none;
-      position: fixed;
-      top:0; left:0;
-      width:100%; height:100%;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
+      display:none; position:fixed;
+      top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.8);
+      justify-content:center; align-items:center;
     }
     .modal-content {
-      background: #222;
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 90%;
-      max-height: 80%;
-      overflow: auto;
-      position: relative;
+      background:#222; padding:20px;
+      border-radius:8px; max-width:90%;
+      max-height:80%; overflow:auto; position:relative;
     }
     .close {
-      position: absolute;
-      top:10px; right:10px;
-      font-size: 1.5em;
-      cursor: pointer;
-      color: #FF6A13;
+      position:absolute; top:10px; right:10px;
+      font-size:1.5em; cursor:pointer;
+      color:#FF6A13;
     }
   </style>
   <script>
-    let knownUnrecalled = 0,
-        soundOn = true;
+    let knownUnrecalled = 0, soundOn = true;
 
     function playBeep(){
       const ctx = new (window.AudioContext||window.webkitAudioContext)(),
-            osc = ctx.createOscillator(),
-            g   = ctx.createGain();
+            osc = ctx.createOscillator(), g = ctx.createGain();
       osc.type='sine';
       osc.frequency.setValueAtTime(600, ctx.currentTime);
-      osc.connect(g);
-      g.connect(ctx.destination);
+      osc.connect(g); g.connect(ctx.destination);
       g.gain.setValueAtTime(1, ctx.currentTime);
       osc.start();
       g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.2);
@@ -177,35 +132,28 @@
     }
 
     function fetchOrders(){
-      fetch('/orders')
-        .then(r=>r.json())
-        .then(data=>{
-          // beep only on truly new, unrecalled orders
-          const unrecalledCount = data.filter(o=>!o.recalled).length;
-          if(unrecalledCount > knownUnrecalled && soundOn) playBeep();
-          knownUnrecalled = unrecalledCount;
+      fetch('/orders').then(r=>r.json()).then(data=>{
+        const count = data.filter(o=>!o.recalled).length;
+        if(count>knownUnrecalled && soundOn) playBeep();
+        knownUnrecalled = count;
 
-          let rows = '';
-          if(data.length === 0){
-            rows = '<tr><td colspan="6">No orders yet.</td></tr>';
-          } else {
-            data.forEach((o,i)=>{
-              const light  = o.elapsed<60 ? 'green'
-                             : o.elapsed<120 ? 'amber'
-                             : 'red';
-              const mins   = Math.floor(o.elapsed/60),
-                    secs   = ('0'+(o.elapsed%60)).slice(-2),
-                    placed = new Date(o.timestamp*1000)
-                               .toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-              let food='', drink='';
-              o.order.forEach(it=>{
-                const li = `<li>${it.quantity}× ${it.name}</li>`;
-                if(/cola|coffee|fanta|tea|water|latte|cappuccino|beer|wine/i.test(it.name))
-                  drink += li;
-                else
-                  food  += li;
-              });
-              rows += `
+        let rows = '';
+        if(!data.length){
+          rows = '<tr><td colspan="6">No orders yet.</td></tr>';
+        } else {
+          data.forEach((o,i)=>{
+            const light = o.elapsed<60?'green':o.elapsed<120?'amber':'red';
+            const mins  = Math.floor(o.elapsed/60),
+                  secs  = ('0'+(o.elapsed%60)).slice(-2),
+                  placed= new Date(o.timestamp*1000)
+                           .toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+            let food='', drink='';
+            o.order.forEach(it=>{
+              const li = `<li>${it.quantity}× ${it.name}</li>`;
+              if(/cola|coffee|fanta|tea|water|latte|cappuccino|beer|wine/i.test(it.name))
+                drink += li; else food += li;
+            });
+            rows += `
 <tr>
   <td><div class="light-box ${light}"></div></td>
   <td class="timer">${mins}:${secs}<small>${placed}</small></td>
@@ -223,23 +171,18 @@
     ${o.recalled?'<span>RECALLED</span>':''}
   </td>
 </tr>`;
-            });
-          }
-
-          document.getElementById('orderTable').innerHTML = `
+          });
+        }
+        document.getElementById('orderTable').innerHTML = `
 <table>
   <colgroup><col><col><col><col><col><col></colgroup>
   <tr>
-    <th>Target</th>
-    <th>Timer</th>
-    <th>Table/Order #</th>
-    <th>Items</th>
-    <th>Comments</th>
-    <th>Action</th>
+    <th>Target</th><th>Timer</th><th>Table/Order #</th>
+    <th>Items</th><th>Comments</th><th>Action</th>
   </tr>
   ${rows}
 </table>`;
-        });
+      });
     }
 
     function clearOrder(i){ fetch('/clear/'+i,{method:'POST'}).then(fetchOrders); }
@@ -247,24 +190,23 @@
     function recallSpecific(i){ fetch('/recall-specific/'+i,{method:'POST'}).then(fetchOrders); }
 
     function openModal(id){
-      document.getElementById(id).style.display = 'flex';
+      document.getElementById(id).style.display='flex';
       if(id==='overviewModal'){
         fetch('/overview-data').then(r=>r.json()).then(d=>{
-          let h='<h2>Food</h2><ul>';
-          for(let k in d.food) h+=`<li>${k}: ${d.food[k]}</li>`;
-          h+='</ul><h2>Drinks</h2><ul>';
-          for(let k in d.drink) h+=`<li>${k}: ${d.drink[k]}</li>`;
-          h+='</ul>';
-          document.getElementById('overviewContent').innerHTML = h;
+          let html='<h2>Food</h2><ul>';
+          for(let k in d.food) html+=`<li>${k}: ${d.food[k]}</li>`;
+          html+='</ul><h2>Drinks</h2><ul>';
+          for(let k in d.drink) html+=`<li>${k}: ${d.drink[k]}</li>`;
+          html+='</ul>';
+          document.getElementById('overviewContent').innerHTML=html;
         });
       } else {
         fetch('/recall-data').then(r=>r.json()).then(a=>{
-          let h='<table><tr><th>Order #</th><th>Items</th><th>Comments</th><th>Duration</th><th>Recall</th></tr>';
+          let html='<table><tr><th>Order #</th><th>Items</th><th>Comments</th><th>Duration</th><th>Recall</th></tr>';
           a.forEach((o,i)=>{
             let lst='<ul>'; o.items.forEach(it=>lst+=`<li>${it.quantity}× ${it.name}</li>`); lst+='</ul>';
-            const m = Math.floor(o.duration/60),
-                  s = ('0'+(o.duration%60)).slice(-2);
-            h+=`<tr>
+            const m=Math.floor(o.duration/60), s=('0'+(o.duration%60)).slice(-2);
+            html+=`<tr>
               <td>#${o.orderNum}</td>
               <td>${lst}</td>
               <td>${o.comments}</td>
@@ -272,8 +214,8 @@
               <td><button class="orange" onclick="recallSpecific(${i});closeModal()">Recall</button></td>
             </tr>`;
           });
-          h+='</table>';
-          document.getElementById('recallContent').innerHTML = h;
+          html+='</table>';
+          document.getElementById('recallContent').innerHTML=html;
         });
       }
     }
