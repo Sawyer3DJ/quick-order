@@ -90,7 +90,7 @@ def quick_order(table_num):
 @app.route('/admin')
 def admin():
     host = request.host_url.rstrip('/')
-    host = host.replace(http://','').replace(http://','')
+    host = host.replace(http://',''.replace(http://','')
     return render_template('admin.html', default_address=host)
 
 @app.route('/qr-connect')
