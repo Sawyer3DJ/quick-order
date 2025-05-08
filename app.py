@@ -91,6 +91,14 @@ def quick_order(table_num):
 def admin():
     return render_template('admin.html')
 
+@app.route('/viewer3d')
+def model_viewer():
+    return render_template('3d_model_viewer.html')
+
+@app.route('/viewer-ar')
+def ar_viewer():
+    return render_template('ar_viewer.html')
+
 @app.route('/licensing')
 def licensing():
     return render_template('licensing.html')
