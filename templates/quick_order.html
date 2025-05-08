@@ -6,108 +6,128 @@
   <title>Quick Order — Table {{ table_num }}</title>
   <style>
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       background: linear-gradient(to bottom right, #FF6A13, #1a1a1a) fixed no-repeat;
-      background-size: cover; color: white; margin:0; padding:0;
+      background-size: cover;
+      color: white; margin: 0; padding: 0;
     }
     .container {
-      max-width:600px; margin:30px auto; padding:20px;
-      background:#222; border-radius:10px; display:none;
+      max-width: 600px; margin: 30px auto;
+      padding: 20px; background: #222;
+      border-radius: 10px; display: none;
     }
-    .container.active{display:block;}
-    h1,h2 {color:#FF6A13; margin-bottom:10px;}
-    .menu-list {list-style:none; margin:0; padding:0;}
+    .container.active { display: block; }
+    h1, h2 { color: #FF6A13; margin-bottom: 10px; }
+    .menu-list { list-style: none; margin: 0; padding: 0; }
     .menu-item {
-      display:flex; align-items:center;
-      border-bottom:1px solid #444; padding:10px 0;
+      display: flex; align-items: center;
+      border-bottom: 1px solid #444; padding: 10px 0;
     }
-    .menu-item:last-child{border-bottom:none;}
-    .item-label{flex:2;}
+    .menu-item:last-child { border-bottom: none; }
+    .item-label { flex: 2; }
     .item-size {
-      flex:1; margin:0 10px; padding:6px; font-size:1.1em;
-      border:none; border-radius:4px; background:#333; color:#fff;
+      flex: 1; margin: 0 10px;
+      padding: 6px; font-size: 1.1em;
+      border-radius: 4px; border: none;
+      background: #333; color: #fff;
+      font-family: Arial;
     }
-    .item-price{flex:1; text-align:right;}
+    .item-price { flex: 1; text-align: right; }
     .add-btn {
-      width:36px; height:36px; background:#28a745; color:#fff;
-      border:none; border-radius:50%; font-size:1.2em; line-height:36px;
-      text-align:center; cursor:pointer; margin-left:10px;
+      width: 36px; height: 36px;
+      background: #28a745; color: white;
+      border: none; border-radius: 50%;
+      font-size: 1.2em; line-height: 36px;
+      text-align: center; cursor: pointer;
+      margin-left: 10px;
     }
-    #orderList{margin-top:20px;}
+
+    #orderList { margin-top: 20px; }
     .order-item {
-      display:flex; justify-content:space-between;
-      align-items:center; margin:5px 0;
+      display: flex; justify-content: space-between;
+      align-items: center; margin: 5px 0;
     }
-    .order-item span{font-size:1.05em;}
+    .order-item span { font-size: 1.05em; font-family: Arial; }
     .remove-btn {
-      background:#dc3545; color:white;
-      border:none; border-radius:5px;
-      padding:5px 10px; cursor:pointer;
+      background: #dc3545; color: white;
+      border: none; border-radius: 5px;
+      padding: 5px 10px; cursor: pointer;
     }
+
     #total {
-      text-align:right; font-weight:bold;
-      margin-top:10px; font-size:1.2em;
+      text-align: right; font-weight: bold;
+      margin-top: 10px; font-size: 1.2em;
+      font-family: Arial;
     }
+
     textarea {
-      width:100%; height:60px; margin-top:10px;
-      padding:8px; border:1px solid #444; border-radius:5px;
-      background:#333; color:#fff; font-family:Arial;
+      width: 100%; height: 60px; margin-top: 10px;
+      font-size: 1em; padding: 8px;
+      border-radius: 5px; border: 1px solid #444;
+      background: #333; color: #fff;
+      font-family: Arial;
     }
+
     button.submit {
-      width:100%; padding:14px; margin-top:15px;
-      font-size:1.2em; background:#28a745; color:white;
-      border:none; border-radius:5px; cursor:pointer;
+      width: 100%; padding: 14px;
+      margin-top: 15px; font-size: 1.2em;
+      background: #28a745; color: white;
+      border: none; border-radius: 5px;
+      cursor: pointer; font-family: Arial;
     }
     button.submit[disabled] {
-      background:grey; cursor:not-allowed;
+      background: grey; cursor: not-allowed;
     }
     button.goBack {
-      width:100%; padding:12px; margin-top:10px;
-      font-size:1.1em; background:#888; color:white;
-      border:none; border-radius:5px; cursor:pointer;
+      width: 48%; padding: 12px;
+      font-size: 1.1em; background: #888;
+      color: white; border: none;
+      border-radius: 5px; cursor: pointer;
+      margin-right: 4%; font-family: Arial;
     }
-    /* REVIEW */
-    .review-item {
-      display:flex; justify-content:space-between;
-      border-bottom:1px dashed #444; padding:8px 0;
+    button.newOrder {
+      display: block; width: 100%;
+      padding: 14px; font-size: 1.2em;
+      background: #28a745; color: white;
+      border: none; border-radius: 5px;
+      cursor: pointer; margin-top: 20px;
+      font-family: Arial;
     }
-    /* SUCCESS */
-    #successPage h1 {font-size:1.8em; text-align:center;}
+    .divider {
+      margin: 30px 0 10px; border-top: 1px solid #444;
+    }
+    #reviewSummary {
+      font-family: Arial; line-height: 1.5em;
+      margin-bottom: 15px;
+    }
+    /* Success screen styling */
+    #successPage h1 {
+      font-size: 1.8em; text-align: center;
+      font-family: Arial;
+    }
+    #successPage p {
+      text-align: center; margin: 10px 0;
+      font-family: Arial;
+    }
     #orderTicket {
-      text-align:center; font-size:2.2em; margin:15px 0;
-      font-weight:bold;
+      text-align: center; font-size: 2.2em;
+      margin: 15px 0; font-weight: bold;
+      font-family: Arial;
     }
-    /* CONFIRM MODAL */
-    .modal {
-      display:none; position:fixed; top:0; left:0;
-      width:100%; height:100%; background:rgba(0,0,0,0.8);
-      justify-content:center; align-items:center;
-    }
-    .modal-content {
-      background:#222; padding:20px; border-radius:8px;
-      text-align:center; width:80%; max-width:300px;
-    }
-    .modal-content p {margin-bottom:20px; font-size:1.2em;}
-    .modal-content .btn {
-      width:45%; padding:10px; margin:0 5px;
-      border:none; border-radius:5px; font-size:1em;
-      cursor:pointer;
-    }
-    .btn.grey {background:#888; color:white;}
-    .btn.green{background:#28a745;color:white;}
   </style>
 </head>
 <body>
 
-  <!-- WELCOME -->
+  <!-- Welcome -->
   <div class="container active" id="welcomePage">
     <h1>Welcome — Table {{ table_num }}</h1>
     <button class="submit" onclick="startOrder()">Start Quick Order</button>
   </div>
 
-  <!-- MENU -->
+  <!-- Menu -->
   <div class="container" id="menuPage">
     <h1>Quick Order Menu</h1>
+
     <h2>Food</h2>
     <ul class="menu-list">
       <li class="menu-item">
@@ -206,70 +226,59 @@
       </li>
     </ul>
 
-    <div id="orderList"></div>
+    <div class="order-list" id="orderList"></div>
     <div id="total">Total: £0.00</div>
 
     <textarea id="comments" placeholder="Comments or allergies?"></textarea>
     <button id="reviewBtn" class="submit" onclick="reviewOrder()" disabled>Review Order</button>
   </div>
 
-  <!-- REVIEW -->
+  <!-- Review -->
   <div class="container" id="reviewPage">
     <h1>Your Order</h1>
-    <div id="reviewList"></div>
-    <p><strong>Comments:</strong> <span id="reviewComments"></span></p>
-    <p><strong>Total:</strong> £<span id="reviewTotal"></span></p>
-    <button class="submit" onclick="showConfirm()">Place Order</button>
+    <div id="reviewSummary"></div>
+    <div class="divider"></div>
     <button class="goBack" onclick="goBack()">Go Back</button>
+    <button class="submit" onclick="placeOrder()">Place Order</button>
   </div>
 
-  <!-- SUCCESS -->
+  <!-- Success -->
   <div class="container" id="successPage">
     <h1>Order Placed!</h1>
     <div id="orderTicket">Table {{ table_num }} — #<span id="orderNumber">0000</span></div>
     <p>Please have payment ready.</p>
-    <button class="goBack" onclick="startOrder()">New Quick Order</button>
-  </div>
-
-  <!-- CONFIRM MODAL -->
-  <div id="confirmModal" class="modal">
-    <div class="modal-content">
-      <p>Place order now?</p>
-      <button class="btn grey" onclick="closeConfirm()">Go Back</button>
-      <button class="btn green" onclick="confirmPlace()">Place Order Now!</button>
-    </div>
+    <button class="newOrder" onclick="startOrder()">New Quick Order</button>
   </div>
 
   <script>
-    const tableNum = {{ table_num }};
-    const endpoint = "{{ url_for('receive_order') }}";
-    const testurl  = "{{ url_for('test') }}";
-    const prices   = {
-      "Loaded Fries Regular":3.00, "Loaded Fries Large":4.50,
-      "Onion Rings Regular":2.50, "Onion Rings Large":3.50,
-      "Korean Chicken Fries Regular":4.00, "Korean Chicken Fries Large":5.50,
-      "Loaded Nachos Regular":4.50, "Loaded Nachos Large":6.00,
-      "Beer Half Pint":2.00, "Beer Pint":3.80,
-      "Red Wine Small":3.50, "Red Wine Large":5.00, "Red Wine Bottle":12.00,
-      "White Wine Small":3.50, "White Wine Large":5.00, "White Wine Bottle":12.00,
-      "Water Regular":1.00, "Water Large":1.50,
-      "Coca Cola Regular":1.80, "Coca Cola Large":2.20,
-      "Cappuccino Regular":2.20, "Cappuccino Large":2.70
-    };
+    const tableNum   = {{ table_num }},
+          endpoint   = "{{ url_for('receive_order') }}",
+          testurl    = "{{ url_for('test') }}",
+          prices     = {
+            "Loaded Fries Regular":3.00, "Loaded Fries Large":4.50,
+            "Onion Rings Regular":2.50, "Onion Rings Large":3.50,
+            "Korean Chicken Fries Regular":4.00, "Korean Chicken Fries Large":5.50,
+            "Loaded Nachos Regular":4.50, "Loaded Nachos Large":6.00,
+            "Beer Half Pint":2.00, "Beer Pint":3.80,
+            "Red Wine Small":3.50, "Red Wine Large":5.00, "Red Wine Bottle":12.00,
+            "White Wine Small":3.50, "White Wine Large":5.00, "White Wine Bottle":12.00,
+            "Water Regular":1.00, "Water Large":1.50,
+            "Coca Cola Regular":1.80, "Coca Cola Large":2.20,
+            "Cappuccino Regular":2.20, "Cappuccino Large":2.70
+          };
     let order = [];
 
-    function startOrder(){
-      order=[]; renderOrder();
-      document.getElementById('comments').value='';
+    function startOrder() {
+      order = []; renderOrder();
       document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
       document.getElementById('menuPage').classList.add('active');
       updateAllPrices();
     }
 
-    function updatePrice(name, sizeId, priceId){
-      const size = document.getElementById(sizeId).value;
-      const key  = name + " " + size;
-      const p    = prices[key]||0;
+    function updatePrice(name, sizeId, priceId) {
+      const size = document.getElementById(sizeId).value,
+            key  = name + " " + size,
+            p    = prices[key]||0;
       document.getElementById(priceId).innerText = "£"+p.toFixed(2);
     }
 
@@ -288,10 +297,10 @@
     }
 
     function addItem(name, sizeId){
-      const size = document.getElementById(sizeId).value;
-      const full = name+" "+size;
-      const ex   = order.find(i=>i.name===full);
-      if(ex) ex.quantity++; else order.push({name:full,quantity:1});
+      const size = document.getElementById(sizeId).value,
+            full = name+" "+size,
+            ex   = order.find(i=>i.name===full);
+      ex? ex.quantity++ : order.push({name:full,quantity:1});
       renderOrder();
     }
 
@@ -301,8 +310,8 @@
     }
 
     function renderOrder(){
-      const list=document.getElementById('orderList'),
-            btn =document.getElementById('reviewBtn');
+      const list = document.getElementById('orderList'),
+            btn  = document.getElementById('reviewBtn');
       list.innerHTML=''; let total=0;
       order.forEach((it,i)=>{
         const cost=(prices[it.name]||0)*it.quantity;
@@ -313,49 +322,18 @@
             <button class="remove-btn" onclick="removeItem(${i})">🗑</button>
           </div>`;
       });
-      document.getElementById('total').innerText='Total: £'+total.toFixed(2);
+      document.getElementById('total').textContent='Total: £'+total.toFixed(2);
       btn.disabled = order.length===0;
     }
 
     function reviewOrder(){
-      const comments=document.getElementById('comments').value;
-      const total=order.reduce((s,i)=>s+(prices[i.name]||0)*i.quantity,0).toFixed(2);
-      // build review list
-      const rl=document.getElementById('reviewList');
-      rl.innerHTML='';
-      order.forEach(it=>{
-        const c=(prices[it.name]||0)*it.quantity;
-        rl.innerHTML+=`
-          <div class="review-item">
-            <span>${it.quantity}× ${it.name}</span>
-            <span>£${c.toFixed(2)}</span>
-          </div>`;
-      });
-      document.getElementById('reviewComments').innerText=comments;
-      document.getElementById('reviewTotal').innerText=total;
-      document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));  
+      const summary = order.map(i=>`${i.quantity}× ${i.name} — £${((prices[i.name]||0)*i.quantity).toFixed(2)}`).join('\n'),
+            comments= document.getElementById('comments').value,
+            total   = order.reduce((s,i)=>s + ((prices[i.name]||0)*i.quantity),0).toFixed(2);
+      document.getElementById('reviewSummary').innerText =
+        summary + "\n\nComments: "+comments+"\n\nTotal: £"+total;
+      document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
       document.getElementById('reviewPage').classList.add('active');
-    }
-
-    function showConfirm(){ document.getElementById('confirmModal').style.display='flex'; }
-    function closeConfirm(){ document.getElementById('confirmModal').style.display='none'; }
-
-    function confirmPlace(){
-      closeConfirm();
-      const comments=document.getElementById('comments').value;
-      const orderNum=Math.floor(1000+Math.random()*9000);
-      fetch(endpoint,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({table:tableNum, order, comments, orderNum})
-      })
-      .then(r=>{ if(!r.ok) throw ''; return r.json(); })
-      .then(_=>{
-        document.getElementById('orderNumber').innerText=orderNum;
-        document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
-        document.getElementById('successPage').classList.add('active');
-      })
-      .catch(_=>alert('Order failed'));
     }
 
     function goBack(){
@@ -363,7 +341,29 @@
       document.getElementById('menuPage').classList.add('active');
     }
 
-    // optional pingServer() as before…
+    function placeOrder(){
+      const comments = document.getElementById('comments').value,
+            orderNum  = Math.floor(1000+Math.random()*9000);
+      fetch(endpoint,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ table:tableNum, order, comments, orderNum })
+      })
+      .then(r=>{ if(!r.ok) throw ''; return r.json(); })
+      .then(_=>{
+        document.getElementById('orderNumber').innerText = orderNum;
+        document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
+        document.getElementById('successPage').classList.add('active');
+      })
+      .catch(_=>alert('Order failed'));
+    }
+
+    function pingServer(){
+      fetch(testurl)
+        .then(r=>r.text())
+        .then(msg=>document.getElementById('pingResult').innerText='✓ '+msg)
+        .catch(_=>document.getElementById('pingResult').innerText='✗ Cannot reach server');
+    }
   </script>
 </body>
 </html>
