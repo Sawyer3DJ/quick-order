@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>3D Model Viewer</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    body { margin:0; background:#1a1a1a; display:flex; flex-direction:column; align-items:center; color:white; }
+    h1 { margin:20px 0; color:#FF6A13; }
+    model-viewer { width: 90vw; height: 70vh; }
+  </style>
+</head>
+<body>
+  <h1>3D Model Viewer</h1>
+  <model-viewer
+    src="{{ url_for('static', filename='models/your_scan.glb') }}"
+    alt="Scanned Dish"
+    camera-controls
+    auto-rotate
+    environment-image="{{ url_for('static', filename='env/restaurant_env.hdr') }}"
+    shadow-intensity="1">
+  </model-viewer>
+</body>
+</html>
