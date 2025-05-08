@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR CONNECT</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body { font-family:Arial; background:#1a1a1a; color:white; text-align:center; padding:50px; }
+    h1 { color:#FF6A13; margin-bottom:30px; }
+    #qrcode { margin:auto; width:256px; height:256px; }
+    button {
+      display:block; width:200px; margin:30px auto;
+      padding:12px; background:#28a745; color:white;
+      border:none; border-radius:5px; font-size:1em;
+      cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>QR CONNECT</h1>
+  <p>Scan to join Wi-Fi <strong>Quick Order Connect</strong></p>
+  <div id="qrcode"></div>
+  <button onclick="location.href='{{ url_for('quick_order', table_num=1) }}'">
+    Proceed to Quick Order
+  </button>
+
+  <script>
+    // Generate Wi-Fi QR code (open network)
+    new QRCode(document.getElementById("qrcode"), {
+      text: "WIFI:T:;S:Quick Order Connect;P:;H:false;;",
+      width: 256, height: 256
+    });
+  </script>
+</body>
+</html>
