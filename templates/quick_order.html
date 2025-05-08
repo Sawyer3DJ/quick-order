@@ -1,68 +1,254 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8">
-<title>Quick Order - Table {{table}}</title>
-<style>
-  body{font-family:Arial;background:#222;color:#fff;padding:20px;}
-  h1{color:#FF6A13;}
-  label,button{display:block;font-size:1em;margin:5px 0;}
-  button {
-    padding:10px;border:none;border-radius:5px;
-    width:100%;cursor:pointer;background:#28a745;color:white;
-  }
-  textarea{width:100%;height:60px;margin-top:10px;}
-</style>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quick Order — Table {{ table_num }}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #FF6A13, #1a1a1a) fixed no-repeat;
+      background-size: cover;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #222;
+      border-radius: 10px;
+      display: none;
+    }
+    .container.active { display: block; }
+    h1, h2 { color: #FF6A13; margin-bottom: 10px; }
+    label, select, textarea, button {
+      font-size: 1.05em;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .green { background-color: #28a745; color: white; }
+    .red   { background-color: #dc3545; color: white; }
+    .grey  { background-color: #888; color: white; }
+    .order-list { margin-top: 20px; }
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5px 0;
+    }
+    .order-item span { font-size: 1.05em; }
+    .remove-btn {
+      background-color: #dc3545;
+      color: white;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    #total {
+      font-weight: bold;
+      text-align: right;
+      margin-top: 10px;
+      font-size: 1.1em;
+    }
+    .divider {
+      margin-top: 30px;
+      border-top: 1px solid #444;
+      margin-bottom: 10px;
+    }
+    .footer {
+      margin-top: 50px;
+      border-top: 1px solid #555;
+      padding-top: 20px;
+      text-align: center;
+    }
+    .footer p { font-size: 0.9em; }
+  </style>
 </head>
 <body>
-  <h1>Quick Order - Table {{table}}</h1>
-  <h2>Sides</h2>
-    <label>Large Fries</label><button onclick="add('Large Fries')">Add</button>
-    <label>Cheesy Loaded Fries</label><button onclick="add('Cheesy Loaded Fries')">Add</button>
-    <label>Korean Chicken Loaded Fries</label><button onclick="add('Korean Chicken Loaded Fries')">Add</button>
-    <label>Loaded Nachos</label><button onclick="add('Loaded Nachos')">Add</button>
-  <h2>Drinks</h2>
-    <label>Beer</label><button onclick="add('Beer')">Add</button>
-    <label>Red Wine</label><button onclick="add('Red Wine')">Add</button>
-    <label>White Wine</label><button onclick="add('White Wine')">Add</button>
-  <h3>Your Order</h3><ul id="orderList"></ul>
-  <p><strong>Total:</strong> £<span id="total">0.00</span></p>
-  <textarea id="comments" placeholder="Comments/allergies"></textarea>
-  <button onclick="place()">Place Order</button>
 
-<script>
-let order=[], prices={
-  "Large Fries":2.5,"Cheesy Loaded Fries":3.5,
-  "Korean Chicken Loaded Fries":4,"Loaded Nachos":4.5,
-  "Beer":3.8,"Red Wine":5,"White Wine":5
-};
+  <!-- Welcome / Test Page -->
+  <div class="container active" id="welcomePage">
+    <h1>Welcome — Table {{ table_num }}</h1>
+    <button class="green" onclick="startOrder()">Start Quick Order</button>
+    <div class="footer">
+      <button class="red" onclick="pingServer()">Test Connection</button>
+      <div id="pingResult">Not yet tested.</div>
+      <p>Connected to: <strong>localhost</strong></p>
+    </div>
+  </div>
 
-function add(name){
-  let o=order.find(x=>x.name===name);
-  o? o.qty++ : order.push({name, qty:1});
-  render();
-}
+  <!-- Menu Page -->
+  <div class="container" id="menuPage">
+    <h1>Quick Order Menu</h1>
 
-function render(){
-  let html='', tot=0;
-  order.forEach(o=>{
-    html += `<li>${o.qty}× ${o.name} (£${(prices[o.name]*o.qty).toFixed(2)})</li>`;
-    tot += prices[o.name]*o.qty;
-  });
-  document.getElementById('orderList').innerHTML = html;
-  document.getElementById('total').innerText = tot.toFixed(2);
-}
+    <h2>Sides</h2>
+    <label>Loaded Fries</label>
+    <select id="loadedFries"><option>Regular</option><option>Large</option></select>
+    <button class="green" onclick="addItem('Loaded Fries', 'loadedFries')">➕</button>
 
-function place(){
-  fetch('/receive-order', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      table: {{table}}, order, comments:document.getElementById('comments').value,
-      orderNum: Math.floor(1000+Math.random()*9000)
-    })
-  })
-  .then(()=>alert('Order sent!'))
-  .catch(()=>alert('Failed'));
-}
-</script>
+    <label>Onion Rings</label>
+    <select id="onionRings"><option>Regular</option><option>Large</option></select>
+    <button class="green" onclick="addItem('Onion Rings', 'onionRings')">➕</button>
+
+    <label>Korean Chicken Loaded Fries</label>
+    <select id="koreanFries"><option>Regular</option><option>Large</option></select>
+    <button class="green" onclick="addItem('Korean Chicken Loaded Fries', 'koreanFries')">➕</button>
+
+    <label>Loaded Nachos</label>
+    <select id="nachos"><option>Regular</option><option>Large</option></select>
+    <button class="green" onclick="addItem('Loaded Nachos', 'nachos')">➕</button>
+
+    <h2>Drinks</h2>
+    <label>Beer</label>
+    <select id="beer"><option>Half Pint</option><option>Pint</option></select>
+    <button class="green" onclick="addItem('Beer', 'beer')">➕</button>
+
+    <label>Red Wine</label>
+    <select id="redWine"><option>Small</option><option>Large</option><option>Bottle</option></select>
+    <button class="green" onclick="addItem('Red Wine', 'redWine')">➕</button>
+
+    <label>White Wine</label>
+    <select id="whiteWine"><option>Small</option><option>Large</option><option>Bottle</option></select>
+    <button class="green" onclick="addItem('White Wine', 'whiteWine')">➕</button>
+
+    <!-- Live Order Preview -->
+    <div class="order-list" id="orderList"></div>
+    <div id="total">Total: £0.00</div>
+
+    <textarea id="comments" placeholder="Comments or allergies?"></textarea>
+    <button class="green" onclick="reviewOrder()">Submit Order</button>
+  </div>
+
+  <!-- Review Before Submit -->
+  <div class="container" id="reviewPage">
+    <h1>Your Order</h1>
+    <div id="reviewSummary"></div>
+    <div class="divider"></div>
+    <button class="grey" onclick="goBack()">Go Back</button>
+    <button class="green" onclick="placeOrder()">Order Now</button>
+  </div>
+
+  <!-- Confirmation -->
+  <div class="container" id="successPage">
+    <h1>Order Placed!</h1>
+    <p>Table {{ table_num }} — Order #<span id="orderNumber">0000</span></p>
+    <p>Please have payment ready.</p>
+    <button class="green" onclick="resetAll()">New Quick Order</button>
+  </div>
+
+  <script>
+    // Jinja‐injected
+    const tableNum = {{ table_num }},
+          endpoint = "{{ url_for('receive_order') }}",
+          testurl  = "{{ url_for('test') }}";
+
+    let order = [];
+
+    function startOrder(){
+      order = [];
+      renderOrder();
+      document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
+      document.getElementById('menuPage').classList.add('active');
+    }
+    function resetAll(){
+      document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
+      document.getElementById('welcomePage').classList.add('active');
+      document.getElementById('pingResult').innerText = 'Not yet tested.';
+    }
+
+    function addItem(name, sizeId){
+      const size = document.getElementById(sizeId).value,
+            full = name + ' ' + size;
+      const ex = order.find(i=>i.name===full);
+      if(ex) ex.quantity++;
+      else order.push({ name: full, quantity: 1 });
+      renderOrder();
+    }
+
+    function removeItem(i){
+      order[i].quantity--;
+      if(order[i].quantity===0) order.splice(i,1);
+      renderOrder();
+    }
+
+    function renderOrder(){
+      const list = document.getElementById('orderList');
+      list.innerHTML='';
+      let total=0;
+      order.forEach((it,i)=>{
+        const cost = (parseFloat(prices[it.name]||0) * it.quantity).toFixed(2);
+        total += +cost;
+        list.innerHTML+=`
+          <div class="order-item">
+            <span>${it.quantity}× ${it.name} (£${cost})</span>
+            <button class="remove-btn" onclick="removeItem(${i})">🗑</button>
+          </div>`;
+      });
+      document.getElementById('total').textContent = 'Total: £'+ total.toFixed(2);
+    }
+
+    function reviewOrder(){
+      const summary = order.map(i=>`${i.quantity}× ${i.name}`).join('<br>');
+      const comments = document.getElementById('comments').value;
+      const total = order.reduce((s,i)=>s + ((prices[i.name]||0)*i.quantity),0).toFixed(2);
+      document.getElementById('reviewSummary').innerHTML = `
+        ${summary}<br><br>
+        <strong>Comments:</strong> ${comments}<br><br>
+        <strong>Total:</strong> £${total}`;
+      document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
+      document.getElementById('reviewPage').classList.add('active');
+    }
+
+    function goBack(){
+      document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
+      document.getElementById('menuPage').classList.add('active');
+    }
+
+    function placeOrder(){
+      const comments = document.getElementById('comments').value,
+            orderNum = Math.floor(1000 + Math.random()*9000);
+      fetch(endpoint, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ table:tableNum, order, comments, orderNum })
+      })
+      .then(r=>{
+        if(!r.ok) throw new Error('Server error');
+        return r.json();
+      })
+      .then(_=>{
+        document.getElementById('orderNumber').innerText = orderNum;
+        document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
+        document.getElementById('successPage').classList.add('active');
+      })
+      .catch(e=>alert('Order failed: '+e.message));
+    }
+
+    function pingServer(){
+      fetch(testurl)
+        .then(r=>r.text())
+        .then(msg=>document.getElementById('pingResult').innerText='✓ '+msg)
+        .catch(_=>document.getElementById('pingResult').innerText='✗ Cannot reach server');
+    }
+
+    // Prices lookup
+    const prices = {
+      "Loaded Fries Regular":3.00, "Loaded Fries Large":4.50,
+      "Onion Rings Regular":2.50, "Onion Rings Large":3.50,
+      "Korean Chicken Loaded Fries Regular":4.00,
+      "Korean Chicken Loaded Fries Large":5.50,
+      "Loaded Nachos Regular":4.50, "Loaded Nachos Large":6.00,
+      "Beer Half Pint":2.00, "Beer Pint":3.80,
+      "Red Wine Small":3.50, "Red Wine Large":5.00, "Red Wine Bottle":12.00,
+      "White Wine Small":3.50, "White Wine Large":5.00, "White Wine Bottle":12.00
+    };
+  </script>
 </body>
 </html>
