@@ -91,6 +91,10 @@ def quick_order(table_num):
 def admin():
     return render_template('admin.html')
 
+@app.route('/qr-connect')
+def qr_connect():
+    return render_template('qr_connect.html')
+
 @app.route('/viewer3d')
 def model_viewer():
     return render_template('3d_model_viewer.html')
