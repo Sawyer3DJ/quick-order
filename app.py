@@ -91,7 +91,7 @@ def quick_order(table_num):
 def admin():
     host = request.host_url.rstrip('/')
     host = host.replace(http://','').replace(http://','')
-    return render_template('admin.html'), default_address=host)
+    return render_template('admin.html', default_address=host)
 
 @app.route('/qr-connect')
 def qr_connect():
