@@ -41,9 +41,9 @@
     colgroup col:nth-child(1) { width:80px; }   /* Target */
     colgroup col:nth-child(2) { width:100px; }  /* Timer */
     colgroup col:nth-child(3) { width:160px; }  /* Table/Order */
-    colgroup col:nth-child(4) { width:180px; }  /* Items (narrower) */
+    colgroup col:nth-child(4) { width:140px; }  /* Items (slightly narrower) */
     colgroup col:nth-child(5) { width:150px; }  /* Comments */
-    colgroup col:nth-child(6) { width:140px; }  /* Action (wider) */
+    colgroup col:nth-child(6) { width:190px; }  /* Action (wider) */
 
     th, td {
       border:1px solid #555;
@@ -153,10 +153,9 @@
         } else {
           data.forEach((o,i)=>{
             const light = o.elapsed<60?'green':o.elapsed<120?'amber':'red';
-            const mins  = Math.floor(o.elapsed/60),
-                  secs  = ('0'+(o.elapsed%60)).slice(-2),
+            const mins  = Math.floor(o.elapsed/60), secs = ('0'+(o.elapsed%60)).slice(-2),
                   placed= new Date(o.timestamp*1000)
-                           .toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+                           .toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
             let food='', drink='';
             o.order.forEach(it=>{
               const li=`<li>${it.quantity}× ${it.name}</li>`;
@@ -215,7 +214,7 @@
         });
       } else {
         fetch('/recall-data').then(r=>r.json()).then(a=>{
-          let html = '<table><tr><th>Order #</th><th>Items</th><th>Comments</th><th>Duration</th><th>Recall</th></tr>';
+          let html='<table><tr><th>Order #</th><th>Items</th><th>Comments</th><th>Duration</th><th>Recall</th></tr>';
           a.forEach((o,i)=>{
             let lst='<ul>'; o.items.forEach(it=>lst+=`<li>${it.quantity}× ${it.name}</li>`); lst+='</ul>';
             const m=Math.floor(o.duration/60), s=('0'+(o.duration%60)).slice(-2);
