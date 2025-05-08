@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8">
+<title>Quick Order - Table {{table}}</title>
+<style>
+  body{font-family:Arial;background:#222;color:#fff;padding:20px;}
+  h1{color:#FF6A13;}
+  label,button{display:block;font-size:1em;margin:5px 0;}
+  button {
+    padding:10px;border:none;border-radius:5px;
+    width:100%;cursor:pointer;background:#28a745;color:white;
+  }
+  textarea{width:100%;height:60px;margin-top:10px;}
+</style>
+</head>
+<body>
+  <h1>Quick Order - Table {{table}}</h1>
+  <h2>Sides</h2>
+    <label>Large Fries</label><button onclick="add('Large Fries')">Add</button>
+    <label>Cheesy Loaded Fries</label><button onclick="add('Cheesy Loaded Fries')">Add</button>
+    <label>Korean Chicken Loaded Fries</label><button onclick="add('Korean Chicken Loaded Fries')">Add</button>
+    <label>Loaded Nachos</label><button onclick="add('Loaded Nachos')">Add</button>
+  <h2>Drinks</h2>
+    <label>Beer</label><button onclick="add('Beer')">Add</button>
+    <label>Red Wine</label><button onclick="add('Red Wine')">Add</button>
+    <label>White Wine</label><button onclick="add('White Wine')">Add</button>
+  <h3>Your Order</h3><ul id="orderList"></ul>
+  <p><strong>Total:</strong> £<span id="total">0.00</span></p>
+  <textarea id="comments" placeholder="Comments/allergies"></textarea>
+  <button onclick="place()">Place Order</button>
+
+<script>
+let order=[], prices={
+  "Large Fries":2.5,"Cheesy Loaded Fries":3.5,
+  "Korean Chicken Loaded Fries":4,"Loaded Nachos":4.5,
+  "Beer":3.8,"Red Wine":5,"White Wine":5
+};
+
+function add(name){
+  let o=order.find(x=>x.name===name);
+  o? o.qty++ : order.push({name, qty:1});
+  render();
+}
+
+function render(){
+  let html='', tot=0;
+  order.forEach(o=>{
+    html += `<li>${o.qty}× ${o.name} (£${(prices[o.name]*o.qty).toFixed(2)})</li>`;
+    tot += prices[o.name]*o.qty;
+  });
+  document.getElementById('orderList').innerHTML = html;
+  document.getElementById('total').innerText = tot.toFixed(2);
+}
+
+function place(){
+  fetch('/receive-order', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      table: {{table}}, order, comments:document.getElementById('comments').value,
+      orderNum: Math.floor(1000+Math.random()*9000)
+    })
+  })
+  .then(()=>alert('Order sent!'))
+  .catch(()=>alert('Failed'));
+}
+</script>
+</body>
+</html>
