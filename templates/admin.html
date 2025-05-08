@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Admin Tools</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  body{font-family:Arial;background:#1a1a1a;color:white;padding:20px;}
+  h1{color:#FF6A13;}
+  label,button{display:block;font-size:1em;margin:10px 0;}
+  button{padding:10px;background:#28a745;color:white;border:none;border-radius:5px;}
+  #qrcode{margin-top:20px;}
+</style>
+</head>
+<body>
+  <h1>Admin Tools</h1>
+  <label>Table Number:
+    <input type="number" id="table" value="1" min="1">
+  </label>
+  <button onclick="generate()">Generate QR Code</button>
+  <div id="qrcode"></div>
+
+<script>
+function generate(){
+  let t = document.getElementById('table').value;
+  let url = location.origin + '/quick-order/' + t;
+  document.getElementById('qrcode').innerHTML = '';
+  new QRCode(document.getElementById('qrcode'), {
+    text: url, width:200, height:200
+  });
+}
+</script>
+</body>
+</html>
