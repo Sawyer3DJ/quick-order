@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Home</title>
+<style>
+  body {
+    display:flex; flex-direction:column; align-items:center;
+    background:#1a1a1a; color:white; font-family:Arial; padding:50px;
+  }
+  h1 { color:#FF6A13; margin-bottom:30px; }
+  button {
+    margin:10px; padding:12px 20px; font-size:1em;
+    cursor:pointer; border:none; border-radius:5px; width:200px;
+  }
+  .orange{background:#FF6A13;} .blue{background:#007bff;}
+  .grey{background:#6c757d;}
+</style>
+</head>
+<body>
+  <h1>Beefeater System</h1>
+  <button class="orange" onclick="location.href='/quick-order/1'">Quick Order App</button>
+  <button class="blue"   onclick="location.href='/dashboard'">Live Order Dashboard</button>
+  <button class="grey"   onclick="location.href='/admin'">Admin Tools</button>
+  <button class="grey"   onclick="location.href='/licensing'">Licensing</button>
+  <button class="grey"   onclick="location.href='/bundles'">Bundles</button>
+</body>
+</html>
