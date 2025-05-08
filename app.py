@@ -83,9 +83,9 @@ def recall_data():
 def home():
     return render_template('home.html')
 
-@app.route('/quick-order/<int:table>')
-def quick_order(table):
-    return render_template('quick_order.html', table=table)
+@app.route('/quick-order/<int:table_num>')
+def quick_order(table_num):
+    return render_template('quick_order.html', table_num=table_num)
 
 @app.route('/admin')
 def admin():
