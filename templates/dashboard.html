@@ -1,120 +1,276 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Live Order Dashboard</title>
+<html>
+<head><meta charset="UTF-8"><title>Live Order Dashboard</title>
 <style>
-body{font-family:Arial;background:#1a1a1a;color:white;padding:20px;position:relative;}
-#datetime{position:absolute;top:10px;right:20px;font-size:0.9em;color:#ccc;}
-h1{text-align:left;color:#FF6A13;}
-#controlBar{display:flex;justify-content:flex-end;gap:8px;margin:10px 0;}
-button{padding:6px 10px;border:none;border-radius:4px;cursor:pointer;font-size:0.9em;}
-.orange{background:#FF6A13;color:white;} .blue{background:#007bff;color:white;} 
-.grey{background:#6c757d;color:white;} .red{background:#dc3545;color:white;}
-table{width:100%;border-collapse:collapse;background:#333;table-layout:fixed;}
-colgroup col:nth-child(1){width:50px;}colgroup col:nth-child(2){width:80px;}
-colgroup col:nth-child(3){width:100px;}colgroup col:nth-child(4){width:auto;}
-colgroup col:nth-child(5){width:150px;}colgroup col:nth-child(6){width:100px;}
-th,td{border:1px solid #555;padding:6px;vertical-align:middle;}
-th{background:#FF6A13;color:black;}
-.light-box{width:36px;height:36px;border-radius:4px;margin:auto;}
-.green{background:#28a745;} .amber{background:#ffc107;} .red{background:#dc3545;}
-.timer,.order-id{font-weight:bold;font-size:1em;text-align:left;}
-.items-col{text-align:left;} .controls{text-align:left;}
-.controls button{float:left;margin-right:5px;} .controls span{margin-left:4px;color:gold;font-weight:bold;}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;}
-.modal-content{background:#222;padding:20px;border-radius:8px;max-width:90%;max-height:80%;overflow:auto;position:relative;}
-.close{position:absolute;top:10px;right:10px;font-size:1.5em;cursor:pointer;color:#FF6A13;}
+  body {
+    font-family: Arial;
+    background: #1a1a1a;
+    color: white;
+    padding: 20px;
+    position: relative;
+  }
+  #datetime {
+    position: absolute;
+    top: 10px; right: 20px;
+    font-size: 0.9em;
+    color: #ccc;
+  }
+  h1 {
+    text-align: left;
+    color: #FF6A13;
+    margin: 0 0 10px 0;
+  }
+  #controlBar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  button {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+  .orange { background: #FF6A13; color: white; }
+  .blue   { background: #007bff; color: white; }
+  .grey   { background: #6c757d; color: white; }
+  .red    { background: #dc3545; color: white; }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #333;
+    table-layout: fixed;
+  }
+  colgroup col:nth-child(1) { width: 80px; }   /* Target */
+  colgroup col:nth-child(2) { width: 100px; }  /* Timer */
+  colgroup col:nth-child(3) { width: 140px; }  /* Table/Order */
+  colgroup col:nth-child(4) { width: auto; }   /* Items */
+  colgroup col:nth-child(5) { width: 150px; }  /* Comments */
+  colgroup col:nth-child(6) { width: 100px; }  /* Action */
+
+  th, td {
+    border: 1px solid #555;
+    padding: 6px;
+    vertical-align: top;
+  }
+  th {
+    background: #FF6A13;
+    color: black;
+    text-align: center;
+  }
+
+  /* Traffic-light square */
+  .light-box {
+    width: 48px;  /* larger */
+    height: 48px;
+    border-radius: 4px;
+    margin: auto;
+  }
+  .green { background: #28a745; }
+  .amber { background: #ffc107; }
+  .red   { background: #dc3545; }
+
+  /* Timer & placed time */
+  .timer {
+    font-weight: bold;
+    text-align: center;  /* centered */
+  }
+  .timer small {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.8em;
+    color: #ccc;
+  }
+
+  /* Table/Order # column */
+  .order-col {
+    text-align: center;
+    font-size: 1.1em;      /* larger */
+    font-weight: bold;
+  }
+  .order-col .table-num {
+    font-size: 1.2em;
+    margin-bottom: 4px;
+  }
+  .order-col .order-num {
+    font-size: 1.4em;
+  }
+
+  /* Items split */
+  .items-col {
+    display: flex;
+    justify-content: space-between;
+  }
+  .items-col ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  /* Comments */
+  .comments-col {
+    text-align: center;   /* centered */
+  }
+
+  /* Actions: clear button on top-left */
+  .controls {
+    position: relative;
+    height: 100%;
+  }
+  .controls button {
+    float: left;
+  }
+  .controls span {
+    position: absolute;
+    top: 6px; left: 60px;
+    color: gold;
+    font-weight: bold;
+  }
+
+  /* Modals (unchanged) */
+  .modal {
+    display: none;
+    position: fixed; top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.8);
+    justify-content:center; align-items:center;
+  }
+  .modal-content {
+    background: #222;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 90%;
+    max-height: 80%;
+    overflow: auto;
+    position: relative;
+  }
+  .close {
+    position: absolute;
+    top: 10px; right: 10px;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #FF6A13;
+  }
 </style>
 <script>
-let known=0,soundOn=true;
+  let known = 0, soundOn = true;
 
-function playBeep(){
-  const ctx=new (AudioContext||webkitAudioContext)(),
-        osc=ctx.createOscillator(), g=ctx.createGain();
-  osc.type='sine'; osc.frequency.setValueAtTime(600,ctx.currentTime);
-  osc.connect(g); g.connect(ctx.destination);
-  g.gain.setValueAtTime(1,ctx.currentTime);
-  osc.start(); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.2);
-  osc.stop(ctx.currentTime+0.2);
-}
+  function playBeep(){
+    const ctx = new (window.AudioContext||window.webkitAudioContext)(),
+          osc = ctx.createOscillator(), g = ctx.createGain();
+    osc.type='sine'; osc.frequency.setValueAtTime(600, ctx.currentTime);
+    osc.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(1, ctx.currentTime);
+    osc.start(); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.2);
+    osc.stop(ctx.currentTime+0.2);
+  }
 
-function fetchOrders(){
-  fetch('/orders').then(r=>r.json()).then(data=>{
-    if(data.length>known && soundOn) playBeep();
-    known=data.length;
-    let html='<table><colgroup><col><col><col><col><col><col></colgroup>'
-           + '<tr><th>Target</th><th>Timer</th>'
-           + '<th>Table/Order #</th><th>Items</th>'
-           + '<th>Comments</th><th>Action</th></tr>';
-    if(!data.length) html+='<tr><td colspan="6">No orders yet.</td></tr>';
-    data.forEach((o,i)=>{
-      const light = o.elapsed<60?'green':o.elapsed<120?'amber':'red';
-      const mins = Math.floor(o.elapsed/60), secs = ('0'+(o.elapsed%60)).slice(-2);
-      const placed = new Date(o.timestamp*1000)
-                       .toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-      let food='', drink='';
-      o.order.forEach(it=>{
-        if(/cola|coffee|fanta|tea|water|latte|cappuccino|beer|wine/i.test(it.name))
-          drink += `<li>${it.quantity}× ${it.name}</li>`;
-        else food += `<li>${it.quantity}× ${it.name}</li>`;
-      });
-      html += `<tr>
-        <td><div class="light-box ${light}"></div></td>
-        <td class="timer">${mins}:${secs}<br><small>${placed}</small></td>
-        <td class="order-id">#${o.orderNum}</td>
-        <td class="items-col"><strong>Food:</strong><ul>${food}</ul>`
-        + `<strong>Drinks:</strong><ul>${drink}</ul></td>
-        <td>${o.comments}</td>
-        <td class="controls">
-          <button class="red" onclick="clearOrder(${i})">Clear</button>`
-        + (o.recalled?'<span>RECALLED</span>':'')
-        + `</td></tr>`;
-    });
-    html += '</table>';
-    document.getElementById('orderTable').innerHTML = html;
-  });
-}
+  function fetchOrders(){
+    fetch('/orders').then(r=>r.json()).then(data=>{
+      if(data.length>known && soundOn) playBeep();
+      known = data.length;
+      let html = '<table>' +
+        '<colgroup>' +
+          '<col><col><col><col><col><col>' +
+        '</colgroup>' +
+        '<tr>' +
+          '<th>Target</th>' +
+          '<th>Timer</th>' +
+          '<th>Table/Order #</th>' +
+          '<th>Items</th>' +
+          '<th>Comments</th>' +
+          '<th>Action</th>' +
+        '</tr>';
+      if(!data.length){
+        html += '<tr><td colspan="6">No orders yet.</td></tr>';
+      }
+      data.forEach((o,i)=>{
+        const light = o.elapsed<60 ? 'green' : o.elapsed<120 ? 'amber' : 'red';
+        const mins = Math.floor(o.elapsed/60), secs = ('0'+(o.elapsed%60)).slice(-2);
+        const placed = new Date(o.timestamp*1000)
+                        .toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        // split items
+        let food='', drink='';
+        o.order.forEach(it=>{
+          if(/cola|coffee|fanta|tea|water|latte|cappuccino|beer|wine/i.test(it.name))
+            drink += `<li>${it.quantity}× ${it.name}</li>`;
+          else
+            food += `<li>${it.quantity}× ${it.name}</li>`;
+        });
 
-function clearOrder(i){ fetch('/clear/'+i,{method:'POST'}).then(fetchOrders); }
-function undoClear(){ fetch('/undo-clear',{method:'POST'}).then(fetchOrders); }
-function recallSpecific(i){ fetch('/recall-specific/'+i,{method:'POST'}).then(fetchOrders); }
-
-function openModal(id){
-  document.getElementById(id).style.display='flex';
-  if(id==='overviewModal'){
-    fetch('/overview-data').then(r=>r.json()).then(d=>{
-      let h='<h2>Food</h2><ul>';
-      for(let k in d.food) h+=`<li>${k}: ${d.food[k]}</li>`;
-      h+='</ul><h2>Drinks</h2><ul>';
-      for(let k in d.drink) h+=`<li>${k}: ${d.drink[k]}</li>`;
-      h+='</ul>'; document.getElementById('overviewContent').innerHTML = h;
-    });
-  } else {
-    fetch('/recall-data').then(r=>r.json()).then(a=>{
-      let h='<table><tr><th>Order #</th><th>Items</th><th>Comments</th><th>Duration</th><th>Recall</th></tr>';
-      a.forEach((o,i)=>{
-        let items = o.items.map(it=>`<li>${it.quantity}× ${it.name}</li>`).join('');
-        let mins = Math.floor(o.duration/60), secs = ('0'+(o.duration%60)).slice(-2);
-        h+=`<tr>
-          <td>#${o.orderNum}</td>
-          <td><ul>${items}</ul></td>
-          <td>${o.comments}</td>
-          <td>${mins}:${secs}</td>
-          <td><button class="orange" onclick="recallSpecific(${i});closeModal()">Recall</button></td>
+        html += `<tr>
+          <td><div class="light-box ${light}"></div></td>
+          <td class="timer">${mins}:${secs}<small>${placed}</small></td>
+          <td class="order-col">
+            <div class="table-num">Table ${o.table}</div>
+            <div class="order-num">#${o.orderNum}</div>
+          </td>
+          <td class="items-col">
+            <div><strong>Food:</strong><ul>${food}</ul></div>
+            <div><strong>Drinks:</strong><ul>${drink}</ul></div>
+          </td>
+          <td class="comments-col">${o.comments}</td>
+          <td class="controls">
+            <button class="red" onclick="clearOrder(${i})">Clear</button>
+            ${o.recalled?'<span>RECALLED</span>':''}
+          </td>
         </tr>`;
       });
-      h+='</table>';
-      document.getElementById('recallContent').innerHTML = h;
+      html += '</table>';
+      document.getElementById('orderTable').innerHTML = html;
     });
   }
-}
 
-function closeModal(){ document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
-function toggleSound(cb){ soundOn = cb.checked; }
+  function clearOrder(i){ fetch('/clear/'+i,{method:'POST'}).then(fetchOrders); }
+  function undoClear(){ fetch('/undo-clear',{method:'POST'}).then(fetchOrders); }
+  function recallSpecific(i){ fetch('/recall-specific/'+i,{method:'POST'}).then(fetchOrders); }
 
-window.onload = fetchOrders;
-setInterval(fetchOrders,5000);
+  function openModal(id){
+    document.getElementById(id).style.display='flex';
+    if(id==='overviewModal'){
+      fetch('/overview-data').then(r=>r.json()).then(d=>{
+        let h = '<h2>Food</h2><ul>';
+        for(let k in d.food) h += `<li>${k}: ${d.food[k]}</li>`;
+        h += '</ul><h2>Drinks</h2><ul>';
+        for(let k in d.drink) h += `<li>${k}: ${d.drink[k]}</li>`;
+        h += '</ul>';
+        document.getElementById('overviewContent').innerHTML = h;
+      });
+    } else {
+      fetch('/recall-data').then(r=>r.json()).then(a=>{
+        let h = '<table><tr><th>Order #</th><th>Items</th>'
+              + '<th>Comments</th><th>Duration</th><th>Recall</th></tr>';
+        a.forEach((o,i)=>{
+          let items = o.items.map(it=>`<li>${it.quantity}× ${it.name}</li>`).join('');
+          let mins = Math.floor(o.duration/60), secs = ('0'+(o.duration%60)).slice(-2);
+          h += `<tr>
+            <td>#${o.orderNum}</td>
+            <td><ul>${items}</ul></td>
+            <td>${o.comments}</td>
+            <td>${mins}:${secs}</td>
+            <td><button class="orange" onclick="recallSpecific(${i});closeModal()">Recall</button></td>
+          </tr>`;
+        });
+        h += '</table>';
+        document.getElementById('recallContent').innerHTML = h;
+      });
+    }
+  }
+
+  function closeModal(){
+    document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
+  }
+  function toggleSound(cb){ soundOn = cb.checked; }
+
+  window.onload = fetchOrders;
+  setInterval(fetchOrders, 5000);
 </script>
-</head><body>
-  <div id="datetime">Date & Time: {{ now }}</div>
+</head>
+<body>
+  <div id="datetime">Date &amp; Time: {{ now }}</div>
   <h1>Live Order Dashboard</h1>
   <div id="controlBar">
     <button class="orange" onclick="openModal('overviewModal')">Overview</button>
@@ -138,4 +294,5 @@ setInterval(fetchOrders,5000);
       <div id="recallContent"></div>
     </div>
   </div>
-</body></html>
+</body>
+</html>
