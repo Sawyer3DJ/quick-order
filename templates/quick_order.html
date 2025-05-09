@@ -75,7 +75,7 @@
     .btn.green[disabled] { background:grey; cursor:not-allowed; }
     .divider { margin:30px 0 10px; border-top:1px solid #444; }
     #reviewSummary { font-family:Arial; line-height:1.5em; }
-    /* Success screen styling */
+    /* Success screen */
     #successPage h1 { font-size:1.8em; text-align:center; }
     #orderTicket {
       text-align:center; font-size:2.2em;
@@ -95,44 +95,86 @@
   <div class="container" id="menuPage">
     <h1>Quick Order Menu</h1>
 
-    <!-- Food Section -->
+    <!-- Food -->
     <h2>Food</h2>
     <ul class="menu-list">
-      {% for d in dishes if d.category=='Food' %}
       <li class="menu-item">
-        <span class="item-label">{{ d.name }}</span>
-        <select id="size-{{ d.id }}" class="item-size"
-                onchange="updatePrice({{ d.id }})">
-          {% for sz, price in d.sizes.items() %}
-            <option value="{{ sz }}">{{ sz }}</option>
-          {% endfor %}
+        <span class="item-label">Large Fries</span>
+        <select id="size-fries" class="item-size" onchange="updatePrice('fries')">
+          <option>Regular</option><option selected>Large</option>
         </select>
-        <span id="price-{{ d.id }}" class="item-price">
-          £{{ "%.2f"|format(d.sizes.values()|list|first) }}
-        </span>
-        <button class="add-btn" onclick="addItem({{ d.id }})">+</button>
+        <span id="price-fries" class="item-price">£3.00</span>
+        <button class="add-btn" onclick="addItem('Large Fries','fries')">+</button>
       </li>
-      {% endfor %}
+      <li class="menu-item">
+        <span class="item-label">Cheesy Loaded Fries</span>
+        <select id="size-cheesy" class="item-size" onchange="updatePrice('cheesy')">
+          <option>Regular</option><option selected>Large</option>
+        </select>
+        <span id="price-cheesy" class="item-price">£4.50</span>
+        <button class="add-btn" onclick="addItem('Cheesy Loaded Fries','cheesy')">+</button>
+      </li>
+      <li class="menu-item">
+        <span class="item-label">Korean Chicken Loaded Fries</span>
+        <select id="size-korean" class="item-size" onchange="updatePrice('korean')">
+          <option>Regular</option><option selected>Large</option>
+        </select>
+        <span id="price-korean" class="item-price">£5.50</span>
+        <button class="add-btn" onclick="addItem('Korean Chicken Loaded Fries','korean')">+</button>
+      </li>
+      <li class="menu-item">
+        <span class="item-label">Large Onion Rings</span>
+        <select id="size-onions" class="item-size" onchange="updatePrice('onions')">
+          <option>Regular</option><option selected>Large</option>
+        </select>
+        <span id="price-onions" class="item-price">£3.00</span>
+        <button class="add-btn" onclick="addItem('Large Onion Rings','onions')">+</button>
+      </li>
     </ul>
 
-    <!-- Drinks Section -->
+    <!-- Drinks -->
     <h2>Drinks</h2>
     <ul class="menu-list">
-      {% for d in dishes if d.category=='Drink' %}
       <li class="menu-item">
-        <span class="item-label">{{ d.name }}</span>
-        <select id="size-{{ d.id }}" class="item-size"
-                onchange="updatePrice({{ d.id }})">
-          {% for sz, price in d.sizes.items() %}
-            <option value="{{ sz }}">{{ sz }}</option>
-          {% endfor %}
+        <span class="item-label">Water</span>
+        <select id="size-water" class="item-size" onchange="updatePrice('water')">
+          <option>Regular</option><option selected>Large</option>
         </select>
-        <span id="price-{{ d.id }}" class="item-price">
-          £{{ "%.2f"|format(d.sizes.values()|list|first) }}
-        </span>
-        <button class="add-btn" onclick="addItem({{ d.id }})">+</button>
+        <span id="price-water" class="item-price">£1.50</span>
+        <button class="add-btn" onclick="addItem('Water','water')">+</button>
       </li>
-      {% endfor %}
+      <li class="menu-item">
+        <span class="item-label">Coca Cola</span>
+        <select id="size-coke" class="item-size" onchange="updatePrice('coke')">
+          <option>Regular</option><option selected>Large</option>
+        </select>
+        <span id="price-coke" class="item-price">£2.20</span>
+        <button class="add-btn" onclick="addItem('Coca Cola','coke')">+</button>
+      </li>
+      <li class="menu-item">
+        <span class="item-label">Fanta</span>
+        <select id="size-fanta" class="item-size" onchange="updatePrice('fanta')">
+          <option>Regular</option><option selected>Large</option>
+        </select>
+        <span id="price-fanta" class="item-price">£2.20</span>
+        <button class="add-btn" onclick="addItem('Fanta','fanta')">+</button>
+      </li>
+      <li class="menu-item">
+        <span class="item-label">Latte</span>
+        <select id="size-latte" class="item-size" onchange="updatePrice('latte')">
+          <option>Regular</option><option selected>Large</option>
+        </select>
+        <span id="price-latte" class="item-price">£2.70</span>
+        <button class="add-btn" onclick="addItem('Latte','latte')">+</button>
+      </li>
+      <li class="menu-item">
+        <span class="item-label">Cappuccino</span>
+        <select id="size-capp" class="item-size" onchange="updatePrice('capp')">
+          <option>Regular</option><option selected>Large</option>
+        </select>
+        <span id="price-capp" class="item-price">£2.70</span>
+        <button class="add-btn" onclick="addItem('Cappuccino','capp')">+</button>
+      </li>
     </ul>
 
     <div class="order-list" id="orderList"></div>
@@ -167,13 +209,16 @@
     const tableNum = {{ table_num }},
           endpoint = "{{ url_for('receive_order') }}",
           testurl  = "{{ url_for('test') }}",
-          menuData = {
-            {% for d in dishes %}
-            {{ d.id }}: {
-              name: "{{ d.name }}",
-              sizes: {{ d.sizes|tojson }}
-            }{% if not loop.last %},{% endif %}
-            {% endfor %}
+          prices   = {
+            fries:   { Regular:2.50, Large:3.00 },
+            cheesy:  { Regular:3.50, Large:4.50 },
+            korean:  { Regular:4.00, Large:5.50 },
+            onions:  { Regular:2.00, Large:3.00 },
+            water:   { Regular:1.00, Large:1.50 },
+            coke:    { Regular:1.80, Large:2.20 },
+            fanta:   { Regular:1.80, Large:2.20 },
+            latte:   { Regular:2.20, Large:2.70 },
+            capp:    { Regular:2.20, Large:2.70 }
           };
 
     let order = [];
@@ -182,25 +227,23 @@
       order = []; renderOrder();
       document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
       document.getElementById('menuPage').classList.add('active');
-      // initialize all prices
-      Object.keys(menuData).forEach(id=>updatePrice(id));
+      Object.keys(prices).forEach(updatePrice);
     }
 
     function updatePrice(id){
       const sel   = document.getElementById(`size-${id}`),
-            size  = sel.value,
-            price = menuData[id].sizes[size]||0;
+            price = prices[id][sel.value] || 0;
       document.getElementById(`price-${id}`)
               .innerText = `£${price.toFixed(2)}`;
     }
 
-    function addItem(id){
+    function addItem(name,id){
       const sel   = document.getElementById(`size-${id}`),
             size  = sel.value,
-            name  = menuData[id].name + " " + size,
-            price = menuData[id].sizes[size]||0;
-      const ex = order.find(i=>i.name===name);
-      if(ex) ex.quantity++; else order.push({name,quantity:1,price});
+            price = prices[id][size]||0;
+      const full = `${name} (${size})`,
+            ex   = order.find(i=>i.name===full);
+      if(ex) ex.quantity++; else order.push({name:full,quantity:1,price});
       renderOrder();
     }
 
@@ -218,7 +261,7 @@
         total += cost;
         list.innerHTML +=
           `<div class="order-item">
-             <span>${it.quantity}× ${it.name} (£${cost.toFixed(2)})</span>
+             <span>${it.quantity}× ${it.name} — £${cost.toFixed(2)}</span>
              <button class="remove-btn" onclick="removeItem(${i})">🗑</button>
            </div>`;
       });
@@ -227,9 +270,7 @@
     }
 
     function reviewOrder(){
-      let txt = order.map(i=>
-        `${i.quantity}× ${i.name} — £${(i.price*i.quantity).toFixed(2)}`
-      ).join("\n");
+      let txt = order.map(i=>`${i.quantity}× ${i.name} — £${(i.price*i.quantity).toFixed(2)}`).join("\n");
       const comments = document.getElementById('comments').value,
             total    = order.reduce((s,i)=>s+i.price*i.quantity,0).toFixed(2);
       document.getElementById('reviewSummary').innerText =
@@ -258,14 +299,6 @@
         document.getElementById('successPage').classList.add('active');
       })
       .catch(_=>alert('Order failed'));
-    }
-
-    function pingServer(){
-      fetch(testurl).then(r=>r.text()).then(m=>
-        document.getElementById('pingResult').innerText = '✓ '+m
-      ).catch(_=>
-        document.getElementById('pingResult').innerText = '✗ Cannot reach server'
-      );
     }
   </script>
 </body>
