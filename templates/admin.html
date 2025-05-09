@@ -3,33 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Tools</title>
+  <title>Admin – Table Card Generator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial; background: #1a1a1a; color: white; padding: 30px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #1a1a1a;
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
     h1 { color: #FF6A13; margin-bottom: 20px; }
-    .field { margin: 15px 0; }
-    label { display: block; margin-bottom: 5px; }
+    .field {
+      margin: 15px 0;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
     input, select {
-      width: 200px; padding: 8px; border-radius: 4px;
-      border: 1px solid #555; background: #333; color: #fff;
+      width: 200px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #555;
+      background: #333;
+      color: white;
       font-size: 1em;
     }
-    #generateBtn {
-      margin-top: 10px; padding: 10px 20px;
-      background: #007bff; color: white; border: none;
-      border-radius: 5px; cursor: pointer;
+    #generateCardBtn {
+      margin: 25px 0;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
     }
-    #qrcode { margin: 20px auto; width:256px; height:256px; }
-    #proceedBtn {
-      display: block; margin: 20px auto; padding: 12px 24px;
-      background: #28a745; color: white; border: none;
-      border-radius: 5px; font-size: 1em; cursor: pointer;
+    #cardPreview {
+      display: none;
+      margin-top: 40px;
+    }
+    .step {
+      margin-bottom: 30px;
+    }
+    .step h2 {
+      margin-bottom: 10px;
+      color: #FF6A13;
+    }
+    .qr-box {
+      display: inline-block;
+      background: #222;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .qr-caption {
+      margin-top: 8px;
+      font-size: 0.95em;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
-  <h1>Admin Tools</h1>
+
+  <h1>Admin – Table Card Generator</h1>
 
   <div class="field">
     <label for="ipInput">Server IP & Port</label>
@@ -45,54 +83,83 @@
     <label for="tableInput">Table Number</label>
     <select id="tableInput">
       {% for i in range(1, 21) %}
-        <option value="{{ i }}">{{ i }}</option>
+        <option value="{{ i }}">Table {{ i }}</option>
       {% endfor %}
     </select>
   </div>
 
-  <div class="field">
-    <label>
-      <input type="checkbox" id="wifiOnly">
-      Generate Wi-Fi Join QR (password: <code>quickfries</code>)
-    </label>
+  <button id="generateCardBtn">Generate Table Card</button>
+
+  <div id="cardPreview">
+    <div class="step">
+      <h2>Step 1: Scan to Join Wi-Fi</h2>
+      <div class="qr-box" id="wifiQR"></div>
+      <div class="qr-caption">SSID: <strong>Quick Order Connect</strong><br>
+        Password: <strong>quickfries</strong>
+      </div>
+    </div>
+
+    <div class="step">
+      <h2>Step 2: Scan to Order</h2>
+      <div class="qr-box" id="urlQR"></div>
+      <div class="qr-caption">http://<span id="previewIP"></span>/quick-order/<span id="previewTable"></span></div>
+    </div>
   </div>
 
-  <button id="generateBtn">Generate QR</button>
-
-  <div id="qrcode"></div>
-
-  <button id="proceedBtn">Proceed to Quick Order</button>
-
   <script>
-    let qr;
+    const ipInput      = document.getElementById('ipInput'),
+          tableInput   = document.getElementById('tableInput'),
+          btnGenerate  = document.getElementById('generateCardBtn'),
+          cardPreview  = document.getElementById('cardPreview'),
+          wifiQRBox    = document.getElementById('wifiQR'),
+          urlQRBox     = document.getElementById('urlQR'),
+          previewIP    = document.getElementById('previewIP'),
+          previewTable = document.getElementById('previewTable');
 
-    function gen() {
-      const ip      = document.getElementById('ipInput').value.trim(),
-            table   = document.getElementById('tableInput').value.trim(),
-            wifiOnly= document.getElementById('wifiOnly').checked,
-            text    = wifiOnly
-              ? `WIFI:T:WPA;S:Quick Order Connect;P:quickfries;H:false;;`
-              : `http://${ip}/quick-order/${table}`;
+    let wifiQR, urlQR;
 
-      // initialize or clear existing
-      if (!qr) {
-        qr = new QRCode(document.getElementById('qrcode'), {
-          width:256,
-          height:256,
+    function generateTableCard() {
+      const ip    = ipInput.value.trim(),
+            table = tableInput.value.trim();
+
+      // Update preview text
+      previewIP.textContent    = ip;
+      previewTable.textContent = table;
+
+      // Create or clear Wi-Fi QR
+      if (!wifiQR) {
+        wifiQR = new QRCode(wifiQRBox, {
+          text: "WIFI:T:WPA;S:Quick Order Connect;P:quickfries;H:false;;",
+          width: 200, height: 200,
           correctLevel: QRCode.CorrectLevel.H
         });
       } else {
-        qr.clear();
+        wifiQR.clear();
+        wifiQR.makeCode("WIFI:T:WPA;S:Quick Order Connect;P:quickfries;H:false;;");
       }
-      qr.makeCode(text);
 
-      // proceed button always opens the URL
-      document.getElementById('proceedBtn')
-        .onclick = () => window.location.href = `http://${ip}/quick-order/${table}`;
+      // Create or clear URL QR
+      const urlText = `http://${ip}/quick-order/${table}`;
+      if (!urlQR) {
+        urlQR = new QRCode(urlQRBox, {
+          text: urlText,
+          width: 200, height: 200,
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } else {
+        urlQR.clear();
+        urlQR.makeCode(urlText);
+      }
+
+      // Reveal the preview
+      cardPreview.style.display = 'block';
     }
 
-    document.getElementById('generateBtn').addEventListener('click', gen);
-    window.addEventListener('DOMContentLoaded', gen);
+    btnGenerate.addEventListener('click', generateTableCard);
+
+    // Auto-generate on page load
+    window.addEventListener('DOMContentLoaded', generateTableCard);
   </script>
+
 </body>
 </html>
