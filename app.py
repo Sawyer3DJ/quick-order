@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, render_template_string, url_for
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import socket, time, datetime
 from collections import defaultdict
@@ -6,19 +6,31 @@ from collections import defaultdict
 app = Flask(__name__)
 CORS(app)
 
-# In-memory order storage
+# In-memory storage
 orders = []
 cleared_orders = []
+
+def get_local_ip():
+    """Discover the local LAN IP without sending any packets."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = '127.0.0.1'
+    finally:
+        s.close()
+    return ip
 
 # ——— Home & Navigation ———
 
 @app.route('/')
+@app.route('/home')
 def home():
     return render_template('home.html')
 
 @app.route('/quick-order/<int:table_num>')
 def quick_order(table_num):
-    # Renders templates/quick_order.html, passing the table number
     return render_template('quick_order.html', table_num=table_num)
 
 @app.route('/dashboard')
@@ -57,9 +69,9 @@ def clear_order(index):
         o['cleared_at'] = time.time()
         cleared_orders.insert(0, o)
         del orders[index]
-        return ('', 204)
+        return '', 204
     except:
-        return ('Not found', 404)
+        return 'Not found', 404
 
 @app.route('/undo-clear', methods=['POST'])
 def undo_clear():
@@ -67,9 +79,9 @@ def undo_clear():
         o = cleared_orders.pop(0)
         o['recalled'] = True
         orders.append(o)
-    return ('', 204)
+    return '', 204
 
-# ——— Overview & Recall Data (for modals) ———
+# ——— Overview & Recall Data for Modals ———
 
 @app.route('/overview-data')
 def overview_data():
@@ -82,7 +94,7 @@ def overview_data():
                 drink[itm['name']] += itm['quantity']
             else:
                 food[itm['name']] += itm['quantity']
-    return jsonify({"food": food, "drink": drink})
+    return jsonify({"food": dict(food), "drink": dict(drink)})
 
 @app.route('/recall-data')
 def recall_data():
@@ -101,10 +113,10 @@ def recall_data():
 
 @app.route('/admin')
 def admin_tools():
-    # Grab host:port (no protocol, no trailing slash)
-    host = request.host_url.rstrip('/')
-    host = host.replace('http://', '').replace('https://', '')
-    return render_template('admin.html', default_address=host)
+    local_ip = get_local_ip()
+    port     = request.environ.get('SERVER_PORT', '5000')
+    default  = f"{local_ip}:{port}"
+    return render_template('admin.html', default_address=default)
 
 # ——— Licensing & Bundles ———
 
@@ -118,25 +130,17 @@ def bundles():
 
 # ——— 3D & AR Viewers ———
 
-@app.route('/viewer3d')
+@app.route('/3d_model_viewer')
 def model_viewer():
     return render_template('3d_model_viewer.html')
 
-@app.route('/viewer-ar')
+@app.route('/ar_viewer')
 def ar_viewer():
     return render_template('ar_viewer.html')
-
-# ——— QR-Connect (standalone invite page) ———
-
-@app.route('/qr-connect')
-def qr_connect():
-    host = request.host_url.rstrip('/').replace('http://', '').replace('https://', '')
-    return render_template('qr_connect.html', default_address=host)
 
 # ——— Launch ———
 
 if __name__ == '__main__':
-    # detect local IP for console-friendly link
-    local_ip = socket.gethostbyname(socket.gethostname())
+    local_ip = get_local_ip()
     print(f"Flask server running at: http://{local_ip}:5000")
     app.run(host='0.0.0.0', port=5000, debug=True)
