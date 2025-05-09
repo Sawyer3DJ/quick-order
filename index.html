@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Table {{ table_num }} • Quick Order</title>
+
+  <!-- QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #FF6A13, #1a1a1a);
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 { margin-bottom: 30px; }
+    section { margin-bottom: 40px; }
+    .qr-container { display: inline-block; background: #222; padding: 15px; border-radius: 8px; }
+    .qr-caption { margin-top: 10px; font-size: 0.95em; }
+    #connectStatus { margin: 20px 0; font-size: 1.1em; }
+    #spinner {
+      display: inline-block;
+      width: 32px; height: 32px;
+      border: 4px solid #444;
+      border-top: 4px solid #28a745;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    #tick {
+      display: none;
+      color: #28a745;
+      font-size: 2em;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    #beginBtn {
+      margin-top: 10px;
+      padding: 12px 24px;
+      font-size: 1em;
+      background: grey;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: not-allowed;
+    }
+    #beginBtn.enabled {
+      background: #28a745;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Table {{ table_num }} • Quick Order</h1>
+
+  <!-- Step 1: Join Wi-Fi -->
+  <section>
+    <h2>Step 1: Scan to Join Wi-Fi</h2>
+    <div class="qr-container" id="wifiQR"></div>
+    <div class="qr-caption">SSID: <strong>Quick Order Connect</strong><br/>Password: <strong>quickfries</strong></div>
+  </section>
+
+  <!-- Step 2: Begin Ordering -->
+  <section>
+    <h2>Step 2: Begin Your Order</h2>
+    <div class="qr-container" id="urlQR"></div>
+    <div class="qr-caption">—or—<br/>Tap “Begin Quick Order” once connected</div>
+
+    <div id="connectStatus">
+      <div id="spinner"></div>
+      <div id="tick">✓ Connected!</div>
+    </div>
+
+    <button id="beginBtn">Begin Quick Order</button>
+  </section>
+
+  <script>
+    // Jinja-injected host:port and table
+    const hostPort = "{{ default_address }}",
+          tableNum = "{{ table_num }}";
+
+    // URL to order page
+    const orderURL = `http://${hostPort}/quick-order/${tableNum}`;
+
+    // Initialize QR codes
+    const wifiQR = new QRCode(document.getElementById("wifiQR"), {
+      text: "WIFI:T:WPA;S:Quick Order Connect;P:quickfries;H:false;;",
+      width: 200, height: 200,
+      correctLevel: QRCode.CorrectLevel.H
+    });
+    const urlQR = new QRCode(document.getElementById("urlQR"), {
+      text: orderURL,
+      width: 200, height: 200,
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    // Button & status elements
+    const spinner   = document.getElementById("spinner"),
+          tick      = document.getElementById("tick"),
+          beginBtn  = document.getElementById("beginBtn");
+
+    beginBtn.onclick = () => {
+      if (beginBtn.classList.contains("enabled")) {
+        window.location.href = orderURL;
+      }
+    };
+
+    // Poll the Flask `/test` endpoint every second to see if we're on the right Wi-Fi
+    function checkConnection() {
+      fetch(`http://${hostPort}/test`, {cache: "no-store"})
+        .then(r => {
+          if (r.ok) {
+            // success: we must be on the local Quick Order network
+            spinner.style.display = "none";
+            tick.style.display    = "inline-block";
+            beginBtn.classList.add("enabled");
+            beginBtn.style.background = "#28a745";
+            beginBtn.style.cursor     = "pointer";
+          } else {
+            throw new Error();
+          }
+        })
+        .catch(() => {
+          // still not connected: keep spinner & disabled button
+          spinner.style.display = "inline-block";
+          tick.style.display    = "none";
+          beginBtn.classList.remove("enabled");
+          beginBtn.style.background = "grey";
+          beginBtn.style.cursor     = "not-allowed";
+        });
+    }
+
+    // Start polling once page loads
+    window.addEventListener("DOMContentLoaded", () => {
+      checkConnection();
+      setInterval(checkConnection, 1000);
+    });
+  </script>
+
+</body>
+</html>
