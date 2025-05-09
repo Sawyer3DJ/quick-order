@@ -6,7 +6,7 @@
   <title>Admin Tools</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background: #1a1a1a; color: white; padding: 30px; }
+    body { font-family: Arial; background: #1a1a1a; color: white; padding: 30px; }
     h1 { color: #FF6A13; margin-bottom: 20px; }
     .field { margin: 15px 0; }
     label { display: block; margin-bottom: 5px; }
@@ -50,6 +50,13 @@
     </select>
   </div>
 
+  <div class="field">
+    <label>
+      <input type="checkbox" id="wifiOnly">
+      Generate Wi-Fi Join QR (password: <code>quickfries</code>)
+    </label>
+  </div>
+
   <button id="generateBtn">Generate QR</button>
 
   <div id="qrcode"></div>
@@ -60,19 +67,28 @@
     let qr;
 
     function gen() {
-      const ip    = document.getElementById('ipInput').value.trim(),
-            table = document.getElementById('tableInput').value.trim(),
-            url   = `http://${ip}/quick-order/${table}`;
+      const ip      = document.getElementById('ipInput').value.trim(),
+            table   = document.getElementById('tableInput').value.trim(),
+            wifiOnly= document.getElementById('wifiOnly').checked,
+            text    = wifiOnly
+              ? `WIFI:T:WPA;S:Quick Order Connect;P:quickfries;H:false;;`
+              : `http://${ip}/quick-order/${table}`;
 
+      // initialize or clear existing
       if (!qr) {
-        qr = new QRCode(document.getElementById('qrcode'), { width:256, height:256 });
+        qr = new QRCode(document.getElementById('qrcode'), {
+          width:256,
+          height:256,
+          correctLevel: QRCode.CorrectLevel.H
+        });
       } else {
         qr.clear();
       }
-      qr.makeCode(url);
+      qr.makeCode(text);
 
+      // proceed button always opens the URL
       document.getElementById('proceedBtn')
-        .onclick = () => window.location.href = url;
+        .onclick = () => window.location.href = `http://${ip}/quick-order/${table}`;
     }
 
     document.getElementById('generateBtn').addEventListener('click', gen);
