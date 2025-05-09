@@ -3,30 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Home menu</title>
+  <title>Home Menu • Quick Order</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #1a1a1a; color: white; margin:0; padding:0; }
-    .container { max-width:400px; margin:50px auto; text-align:center; }
-    h1 { color:#FF6A13; margin-bottom:30px; }
-    button {
-      display:block; width:100%; padding:12px; margin:8px 0;
-      background:#FF6A13; color:white; border:none; border-radius:5px;
-      font-size:1em; cursor:pointer;
+    body {
+      font-family: Arial, sans-serif;
+      background: #1a1a1a;
+      color: white;
+      text-align: center;
+      padding: 40px;
     }
+    h1 {
+      color: #FF6A13;
+      margin-bottom: 30px;
+    }
+    .btn {
+      display: block;
+      width: 260px;
+      margin: 10px auto;
+      padding: 15px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      color: white;
+    }
+    .orange { background: #FF6A13; }
+    .blue   { background: #007bff; }
+    .grey   { background: #6c757d; }
+    .green  { background: #28a745; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Home menu</h1>
-    <button onclick="location.href='{{ url_for('quick_order', table_num=1) }}'">Quick Order</button>
-    <button onclick="location.href='{{ url_for('dashboard') }}'">Live Order Dashboard</button>
-    <button onclick="location.href='{{ url_for('admin_tools') }}'">Admin_Tools</button>
-    <button onclick="location.href='{{ url_for('bundles') }}'">Bundles</button>
-    <button onclick="location.href='{{ url_for('qr_connect') }}'">QR CONNECT</button>
-    <button onclick="location.href='{{ url_for('licensing') }}'">Licensing</button>
-    <button onclick="location.href='{{ url_for('bundles') }}'">Bundles</button>
-    <button onclick="location.href='{{ url_for('model_viewer') }}'">3D Model Viewer</button>
-    <button onclick="location.href='{{ url_for('ar_viewer') }}'">AR Viewer</button>
-  </div>
+  <h1>Home Menu</h1>
+
+  <a href="{{ url_for('quick_order', table_num=1) }}" class="btn orange">
+    Quick Order App
+  </a>
+
+  <a href="{{ url_for('dashboard') }}" class="btn blue">
+    Live Order Dashboard
+  </a>
+
+  <a href="{{ url_for('admin_tools') }}" class="btn grey">
+    Admin Tools
+  </a>
+
+  <a href="{{ url_for('licensing') }}" class="btn green">
+    Licensing
+  </a>
+
+  <a href="{{ url_for('bundles') }}" class="btn orange">
+    Bundles
+  </a>
+
+  <a href="{{ url_for('model_viewer') }}" class="btn grey">
+    3D Model Viewer
+  </a>
+
+  <a href="{{ url_for('ar_viewer') }}" class="btn blue">
+    AR Viewer
+  </a>
 </body>
 </html>
