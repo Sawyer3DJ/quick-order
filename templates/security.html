@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Security & Protection Plan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a1a1a;
+      color: #f0f0f0;
+      padding: 40px;
+      max-width: 900px;
+      margin: auto;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      color: #FF6A13;
+    }
+    code {
+      background: #333;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #fff;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Security & Protection Plan</h1>
+
+  <div class="section">
+    <h2>1. Secure Endpoints</h2>
+    <p>
+      All admin-level or sensitive routes should be protected. For example:
+      <ul>
+        <li>Use <code>Flask-Login</code> or session-based login for <code>/admin</code>, <code>/menu-editor</code>.</li>
+        <li>Sanitize input on every form (especially JSON input from the Quick Order app).</li>
+        <li>Use <code>POST</code> not <code>GET</code> for destructive actions (e.g. clearing orders).</li>
+      </ul>
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>2. Disable Debug Mode</h2>
+    <p>
+      Never deploy Flask in <code>debug=True</code>. Debug mode can open access to the Werkzeug console and allow remote code execution. Always set:
+      <code>app.run(debug=False)</code>
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>3. CSRF Protection</h2>
+    <p>
+      Use Flask-WTF or implement CSRF tokens manually to protect against cross-site request forgery. Especially important for forms on the admin side.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>4. Expiring URLs</h2>
+    <p>
+      If you provide temporary access to pages (like table-specific links), use time-limited tokens via <code>itsdangerous</code>.
+      <br/>Example:
+      <code>s = URLSafeTimedSerializer(secret_key)</code>
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>5. Docker & Deployment</h2>
+    <p>
+      Use Docker to containerize your app. Benefits:
+      <ul>
+        <li>Runs the same on any system</li>
+        <li>Easy updates</li>
+        <li>Better security & reproducibility</li>
+      </ul>
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>6. GUI Launcher</h2>
+    <p>
+      A simple graphical desktop launcher (using Electron or Python's Tkinter) can help staff start/stop the app without using terminal commands.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>7. Penetration Testing</h2>
+    <p>
+      To ensure security, you can:
+      <ul>
+        <li>Use tools like <code>OWASP ZAP</code> to scan for vulnerabilities</li>
+        <li>Hire a white-hat tester or use services like <code>HackerOne</code>, <code>Bugcrowd</code></li>
+        <li>Reach out to cybersecurity firms for full audit</li>
+      </ul>
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>8. Final Recommendations</h2>
+    <ul>
+      <li>Ensure secure login with password hashing</li>
+      <li>Use HTTPS in production (via nginx + Let's Encrypt)</li>
+      <li>Back up all data securely if persistent storage is used</li>
+      <li>Limit access to local network or VPN</li>
+    </ul>
+  </div>
+
+</body>
+</html>
