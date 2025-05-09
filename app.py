@@ -163,11 +163,23 @@ def api_menu_delete(dish_id):
     db.session.commit()
     return ('', 204)
 
-# ─── Licensing & Bundles ───────────────────────────────────────────────────────
+# ─── Monetisation ───────────────────────────────────────────────────────
 @app.route('/licensing')
 def licensing():   return render_template('licensing.html')
 @app.route('/bundles')
 def bundles():     return render_template('bundles.html')
+
+@app.route('/security')
+def security():
+    return render_template('security.html')
+
+@app.route('/distribution')
+def distribution():
+    return render_template('distribution.html')
+
+@app.route('/marketing')
+def marketing():
+    return render_template('marketing.html')
 
 # ─── 3D & AR Viewers ───────────────────────────────────────────────────────────
 @app.route('/viewer3d')
