@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/> 
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin • Menu Editor</title>
+  <style>
+    body { font-family: Arial; background:#1a1a1a; color:#eee; padding:20px; }
+    h1 { color:#FF6A13; }
+    table { width:100%; border-collapse:collapse; background:#333; margin-top:20px; }
+    th,td { padding:8px; border:1px solid #555; text-align:left; }
+    th { background:#FF6A13; color:#000; }
+    input, select { width:100%; padding:4px; background:#444; color:#fff; border:none; }
+    button { padding:6px 12px; margin:2px; border:none; border-radius:4px; cursor:pointer; }
+    .btn-add { background:#28a745; color:white; }
+    .btn-save { background:#007bff; color:white; }
+    .btn-del  { background:#dc3545; color:white; }
+  </style>
+</head>
+<body>
+  <h1>Menu Editor</h1>
+  <button class="btn-add" onclick="addRow()">+ Add New Dish</button>
+
+  <table id="menuTable">
+    <thead>
+      <tr><th>Name</th><th>Category</th><th>Sizes (JSON)</th><th>3D Model URL</th><th>Actions</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function fetchMenu() {
+      const resp = await fetch('/api/menu');
+      const data = await resp.json();
+      const tbody = document.querySelector('#menuTable tbody');
+      tbody.innerHTML = '';
+      data.forEach(d => rowFromDish(d));
+    }
+
+    function rowFromDish(dish) {
+      const tr = document.createElement('tr');
+      tr.dataset.id = dish.id;
+      tr.innerHTML = `
+        <td><input value="${dish.name}" /></td>
+        <td>
+          <select>
+            <option${dish.category==='Food'?' selected':''}>Food</option>
+            <option${dish.category==='Drink'?' selected':''}>Drink</option>
+          </select>
+        </td>
+        <td><input value='${JSON.stringify(dish.sizes)}'/></td>
+        <td><input value="${dish.model_url||''}" /></td>
+        <td>
+          <button class="btn-save" onclick="saveRow(this)">Save</button>
+          <button class="btn-del"  onclick="deleteRow(this)">Delete</button>
+        </td>`;
+      document.querySelector('#menuTable tbody').append(tr);
+    }
+
+    function addRow(){
+      rowFromDish({id:'new',name:'',category:'Food',sizes:{"Regular":1},"",model_url:''});
+    }
+
+    async function saveRow(btn){
+      const tr = btn.closest('tr');
+      const id = tr.dataset.id;
+      const [name, cat, sizes, url] = Array.from(tr.querySelectorAll('input,select'))
+        .map(el=>el.value);
+      const payload = { name, category:cat, sizes: JSON.parse(sizes), model_url:url };
+      const method = id==='new' ? 'POST' : 'PUT';
+      const urlApi = id==='new' ? '/api/menu' : `/api/menu/${id}`;
+      await fetch(urlApi, {
+        method, 
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      fetchMenu();
+    }
+
+    async function deleteRow(btn){
+      const tr = btn.closest('tr'), id = tr.dataset.id;
+      if(id!=='new'){
+        await fetch(`/api/menu/${id}`, { method:'DELETE' });
+      }
+      fetchMenu();
+    }
+
+    // initial load
+    fetchMenu();
+  </script>
+</body>
+</html>
