@@ -6,20 +6,44 @@
   <title>3D Model Viewer</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
-    body { margin:0; background:#1a1a1a; display:flex; flex-direction:column; align-items:center; color:white; }
-    h1 { margin:20px 0; color:#FF6A13; }
-    model-viewer { width: 90vw; height: 70vh; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #1a1a1a;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #FF6A13;
+      margin-bottom: 20px;
+    }
+    model-viewer {
+      width: 100%;
+      max-width: 600px;
+      height: 500px;
+      margin: auto;
+      border-radius: 10px;
+      background: #000;
+    }
+    p {
+      margin-top: 10px;
+      color: #ccc;
+    }
   </style>
 </head>
 <body>
   <h1>3D Model Viewer</h1>
-  <model-viewer
-    src="{{ url_for('static', filename='models/your_scan.glb') }}"
-    alt="Scanned Dish"
-    camera-controls
-    auto-rotate
-    environment-image="{{ url_for('static', filename='env/restaurant_env.hdr') }}"
-    shadow-intensity="1">
+  <model-viewer src="{{ url_for('static', filename='models/breakfast.glb') }}"
+                alt="Breakfast 3D Model"
+                auto-rotate
+                camera-controls
+                ar
+                shadow-intensity="1"
+                exposure="1"
+                tone-mapping="aces"
+                environment-image="neutral"
+                disable-zoom>
   </model-viewer>
+  <p>This is your scanned breakfast loaded from <code>/static/models/breakfast.glb</code></p>
 </body>
 </html>
