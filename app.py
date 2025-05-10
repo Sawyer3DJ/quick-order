@@ -182,7 +182,7 @@ def marketing():
     return render_template('marketing.html')
 
 @app.route('/monetisation')
-def marketing():
+def monetisation():
     return render_template('monetisation.html')
 
 # ─── 3D & AR Viewers ───────────────────────────────────────────────────────────
