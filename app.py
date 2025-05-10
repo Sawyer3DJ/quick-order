@@ -181,6 +181,10 @@ def distribution():
 def marketing():
     return render_template('marketing.html')
 
+@app.route('/monetisation')
+def marketing():
+    return render_template('monetisation.html')
+
 # ─── 3D & AR Viewers ───────────────────────────────────────────────────────────
 @app.route('/viewer3d')
 def model_viewer(): return render_template('3d_model_viewer.html')
