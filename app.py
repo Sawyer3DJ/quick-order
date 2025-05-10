@@ -124,7 +124,7 @@ def admin_tools():
     return render_template('admin.html', default_address=host)
 
 # ─── Menu Editor Endpoints ─────────────────────────────────────────────────────
-@app.route('/admin/menu')
+@app.route('/admin_menu')
 def menu_editor():
     # serves the React/vanilla-JS powered editor
     return render_template('admin_menu.html')
