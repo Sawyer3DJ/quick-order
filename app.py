@@ -191,6 +191,61 @@ def model_viewer(): return render_template('3d_model_viewer.html')
 @app.route('/viewer-ar')
 def ar_viewer():    return render_template('ar_viewer.html')
 
+# ---- Login CSRF stuff ------
+
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from flask_bcrypt import Bcrypt
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired
+from werkzeug.security import generate_password_hash, check_password_hash
+
+app.secret_key = 'replace_this_with_a_real_secret_key'
+bcrypt = Bcrypt(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+# Dummy admin user (could later use DB)
+users = {'admin': generate_password_hash('password')}
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit   = SubmitField('Login')
+
+class User(UserMixin):
+    def __init__(self, id):
+        self.id = id
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id in users:
+        return User(user_id)
+    return None
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = form.username.data
+        if user in users and check_password_hash(users[user], form.password.data):
+            login_user(User(user))
+            return render_template('admin_menu.html')  # redirect later if needed
+        else:
+            return render_template('login.html', form=form, error="Invalid credentials")
+    return render_template('login.html', form=form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return render_template('login.html', form=LoginForm(), error="Logged out")
+
+# Protect the menu editor
+@app.route('/admin/menu')
+@login_required
+def menu_editor():
+    return render_template('admin_menu.html')
+
 # ─── Launch ────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     local_ip = socket.gethostbyname(socket.gethostname())
