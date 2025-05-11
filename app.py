@@ -4,41 +4,23 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from werkzeug.security import generate_password_hash, check_password_hash
-
 import socket, time, datetime, json
 from collections import defaultdict
 
-# ─── App Setup ─────────────────────────────────────────────────────────────
 app = Flask(__name__)
-app.secret_key = 'replace_this_with_a_real_secret_key'
 CORS(app)
-
-# ─── Security Setup ────────────────────────────────────────────────────────
 bcrypt = Bcrypt(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
 
-# Dummy user store (in memory for now)
-users = {'admin': generate_password_hash('password')}
+# Security configuration
+app.secret_key = 'replace_this_with_a_real_secret_key'
+limiter = Limiter(get_remote_address, app=app, default_limits=["200 per day", "50 per hour"])
 
-class User(UserMixin):
-    def __init__(self, id):
-        self.id = id
-
-@login_manager.user_loader
-def load_user(user_id):
-    if user_id in users:
-        return User(user_id)
-
-class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Login')
-
-# ─── Database Setup ────────────────────────────────────────────────────────
+# ─── Database setup ─────────────────────────────────────────────────────────────
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///menu.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -62,21 +44,28 @@ class Dish(db.Model):
 with app.app_context():
     db.create_all()
 
-# ─── Routes ───────────────────────────────────────────────────────────────
-@app.route('/')
-def home(): return render_template('home.html')
+# ─── Login Setup ────────────────────────────────────────────────────────────────
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
-@app.route('/quick-order/<int:table_num>')
-def quick_order(table_num):
-    dishes = Dish.query.order_by(Dish.category, Dish.name).all()
-    return render_template('quick_order.html', table_num=table_num, dishes=[d.to_dict() for d in dishes])
+users = {'admin': generate_password_hash('password')}
 
-@app.route('/dashboard')
-def dashboard():
-    now = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
-    return render_template('dashboard.html', now=now)
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
+
+class User(UserMixin):
+    def __init__(self, id): self.id = id
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id in users:
+        return User(user_id)
+    return None
 
 @app.route('/login', methods=['GET', 'POST'])
+@limiter.limit("5 per minute")
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -90,55 +79,32 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return render_template('login.html', form=LoginForm(), error="Logged out")
 
-@app.route('/admin')
-def admin_tools():
-    host = request.host_url.rstrip('/').replace('http://','').replace('https://','')
-    return render_template('admin.html', default_address=host)
+# ─── Routes ─────────────────────────────────────────────────────────────────────
+@app.route('/')
+def home():
+    return render_template('home.html')
 
-@app.route('/admin/menu')
-@login_required
-def menu_editor():
-    return render_template('admin_menu.html')
-
-# ─── API ─────────────────────────────────────────────────────────────
-@app.route('/api/menu', methods=['GET'])
-def api_menu_get():
+@app.route('/quick-order/<int:table_num>')
+def quick_order(table_num):
     dishes = Dish.query.order_by(Dish.category, Dish.name).all()
-    return jsonify([d.to_dict() for d in dishes])
+    return render_template('quick_order.html', table_num=table_num, dishes=[d.to_dict() for d in dishes])
 
-@app.route('/api/menu', methods=['POST'])
-def api_menu_create():
-    data = request.get_json()
-    d = Dish(name=data['name'], category=data['category'],
-             sizes=json.dumps(data['sizes']), model_url=data.get('model_url'))
-    db.session.add(d)
-    db.session.commit()
-    return jsonify(d.to_dict()), 201
+@app.route('/dashboard')
+def dashboard():
+    now = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
+    return render_template('dashboard.html', now=now)
 
-@app.route('/api/menu/<int:dish_id>', methods=['PUT'])
-def api_menu_update(dish_id):
-    data = request.get_json()
-    d = Dish.query.get_or_404(dish_id)
-    d.name = data['name']
-    d.category = data['category']
-    d.sizes = json.dumps(data['sizes'])
-    d.model_url = data.get('model_url')
-    db.session.commit()
-    return jsonify(d.to_dict()), 200
+@app.route('/test')
+def test():
+    return "Server is up and reachable!", 200
 
-@app.route('/api/menu/<int:dish_id>', methods=['DELETE'])
-def api_menu_delete(dish_id):
-    d = Dish.query.get_or_404(dish_id)
-    db.session.delete(d)
-    db.session.commit()
-    return ('', 204)
-
-# ─── Orders ─────────────────────────────────────────────────────────────
+# ─── Order API ─────────────────────────────────────────────────────────────────
 orders, cleared_orders = [], []
 
 @app.route('/receive-order', methods=['POST'])
+@limiter.limit("10 per minute")
 def receive_order():
     data = request.get_json()
     data['timestamp'] = time.time()
@@ -196,32 +162,72 @@ def recall_data():
         })
     return jsonify(arr)
 
-# ─── Other Pages ─────────────────────────────────────────────────────
+# ─── Admin Tools & Menu Editor ────────────────────────────────────────────────
+@app.route('/admin')
+def admin_tools():
+    host = request.host_url.rstrip('/').replace('http://','').replace('https://','')
+    return render_template('admin.html', default_address=host)
+
+@app.route('/admin/menu')
+@login_required
+def menu_editor():
+    return render_template('admin_menu.html')
+
+@app.route('/api/menu', methods=['GET'])
+def api_menu_get():
+    dishes = Dish.query.order_by(Dish.category, Dish.name).all()
+    return jsonify([d.to_dict() for d in dishes])
+
+@app.route('/api/menu', methods=['POST'])
+def api_menu_create():
+    data = request.get_json()
+    d = Dish(name=data['name'],
+             category=data['category'],
+             sizes=json.dumps(data['sizes']),
+             model_url=data.get('model_url'))
+    db.session.add(d)
+    db.session.commit()
+    return jsonify(d.to_dict()), 201
+
+@app.route('/api/menu/<int:dish_id>', methods=['PUT'])
+def api_menu_update(dish_id):
+    data = request.get_json()
+    d = Dish.query.get_or_404(dish_id)
+    d.name = data['name']
+    d.category = data['category']
+    d.sizes = json.dumps(data['sizes'])
+    d.model_url = data.get('model_url')
+    db.session.commit()
+    return jsonify(d.to_dict()), 200
+
+@app.route('/api/menu/<int:dish_id>', methods=['DELETE'])
+def api_menu_delete(dish_id):
+    d = Dish.query.get_or_404(dish_id)
+    db.session.delete(d)
+    db.session.commit()
+    return ('', 204)
+
+# ─── Informational Pages ───────────────────────────────────────────────────────
 @app.route('/licensing')
 def licensing(): return render_template('licensing.html')
-
 @app.route('/bundles')
 def bundles(): return render_template('bundles.html')
-
 @app.route('/security')
 def security(): return render_template('security.html')
-
 @app.route('/distribution')
 def distribution(): return render_template('distribution.html')
-
 @app.route('/marketing')
 def marketing(): return render_template('marketing.html')
-
 @app.route('/monetisation')
 def monetisation(): return render_template('monetisation.html')
 
+# ─── Viewers ───────────────────────────────────────────────────────────────────
 @app.route('/viewer3d')
 def model_viewer(): return render_template('3d_model_viewer.html')
-
 @app.route('/viewer-ar')
 def ar_viewer(): return render_template('ar_viewer.html')
 
-# ─── Launch ──────────────────────────────────────────────────────────
+# ─── Launch ────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     local_ip = socket.gethostbyname(socket.gethostname())
     print(f"Flask server running at: http://{local_ip}:5000")
