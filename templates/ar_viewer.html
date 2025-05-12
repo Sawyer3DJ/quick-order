@@ -3,52 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AR Viewer – Summon Thy Meal</title>
+  <title>AR Model Viewer</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     body {
-      margin: 0;
-      background: #1a1a1a;
       font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #1a1a1a, #FF6A13);
       color: white;
-      text-align: center;
+      margin: 0;
       padding: 20px;
+      text-align: center;
     }
     h1 {
       color: #FF6A13;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
     model-viewer {
       width: 100%;
-      height: 80vh;
+      max-width: 500px;
+      height: 400px;
+      margin: auto;
       background: #000;
+      border-radius: 12px;
     }
-    .info {
-      font-size: 0.9em;
-      color: #ccc;
-      margin-top: 10px;
+    #qrcode {
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
 
-  <h1>Augmented Breakfast Reality</h1>
+  <h1>Augmented Reality Viewer</h1>
+
   <model-viewer
-    src="{{ url_for('static', filename='models/breakfast.glb') }}"
-    ios-src="{{ url_for('static', filename='models/breakfast.usdz') }}"
+    src="/static/models/breakfast.glb"
+    ios-src="/static/models/breakfast.usdz"
+    alt="Breakfast Model"
     ar
-    ar-modes="scene-viewer quick-look webxr"
-    camera-controls
+    ar-modes="scene-viewer webxr quick-look"
     auto-rotate
+    camera-controls
+    disable-pan
+    min-camera-orbit="auto 20deg auto"
+    max-camera-orbit="auto 90deg auto"
     environment-image="neutral"
     exposure="1"
-    alt="Delicious breakfast on a plate">
+    shadow-intensity="1">
   </model-viewer>
 
-  <div class="info">
-    Scan the scene, tap to place your breakfast!<br>
-    Works on ARKit (iOS) and WebXR-compatible Android devices.
-  </div>
+  <div id="qrcode"></div>
+
+  <script>
+    new QRCode(document.getElementById("qrcode"), {
+      text: window.location.href,
+      width: 180,
+      height: 180,
+      colorDark: "#ffffff",
+      colorLight: "#1a1a1a",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  </script>
 
 </body>
 </html>
